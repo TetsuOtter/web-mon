@@ -1,12 +1,28 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isValidLineData(d)
+    {
+      return (
+        d.keys().hasOnly(["can_read", "can_write", "disp_name", "tag_list", "hashed_read_pw", "hashed_write_pw", "time_multipl"])
+        && d.can_read is list && d.can_read.size() > 0
+        && d.can_write is list && d.can_write.size() > 0
+        && d.disp_name is string
+        && d.tag_list is list
+        && d.hashed_read_pw is map
+        && d.hashed_write_pw is map
+        && d.time_multipl is int
+      );
+    }
+    function can_access(allow_list, req_auth) {
+      return ("" in allow_list || (req_auth != null && req_auth.uid in allow_list));
+    }
     match /line/{LINE_ID} {
-      allow read:
-        if "" in resource.data.can_read || (request.auth != null && request.auth.uid in resource.data.can_read);
-      allow create: if request.auth != null;
-      allow update:
-        if "" in resource.data.can_write || (request.auth != null && request.auth.uid in resource.data.can_write);
+      allow read: if can_access(resource.data.can_read, request.auth);
+      allow create: if request.auth != null && isValidLineData(request.resource.data);
+      allow update: if can_access(resource.data.can_write, request.auth) && isValidLineData(request.resource.data);
+      // deleteはadmin-sdkでのみ許可
     }
   }
 }
