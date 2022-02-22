@@ -23,6 +23,66 @@ service cloud.firestore {
       allow create: if request.auth != null && isValidLineData(request.resource.data);
       allow update: if can_access(resource.data.can_write, request.auth) && isValidLineData(request.resource.data);
       // deleteはadmin-sdkでのみ許可
+
+      function getLineData()
+      {
+        return get(path(["databases", database, "documents", "line", LINE_ID].join("/"))).data;
+      }
+      function isValidTimetableData(d)
+      {
+        return (
+          d.keys().hasOnly([
+            "tags",
+            "train_id",
+            "sec_sys_train_id",
+            "sec_sys_sta_pass_setting",
+            "direction",
+            "radio_ch",
+            "line_color",
+            "train_type",
+            "dep_from_name",
+            "dep_from_time",
+            "dep_from_track_num",
+            "work_to_name",
+            "work_to_time",
+            "work_to_track_num",
+            "last_stop_name",
+            "last_stop_time",
+            "last_stop_track_num",
+            "office_name",
+            "work_number",
+            "effected_date",
+            "additional_info",
+            "next_work"
+          ])
+          && d.tags is list && d.tags.size() < 16
+          && d.train_id is string && d.train_id.size() > 0 && d.train_id.size() < 128
+          && d.sec_sys_train_id is string && d.sec_sys_train_id.size() < 128
+          && d.sec_sys_sta_pass_setting is bool
+          && d.direction is string && (d.direction == "Inbound" || d.direction == "Outbound")
+          && d.radio_ch is string && d.radio_ch.size() < 16
+          && d.line_color is string && d.line_color.matches("[0-9a-fA-F]{6}")
+          && d.train_type is string && d.train_type.size() < 128
+          && d.dep_from_name is string && d.dep_from_name.size() < 256
+          && d.dep_from_time is timestamp
+          && d.dep_from_track_num is string && d.dep_from_track_num.size() < 64
+          && d.work_to_name is string && d.work_to_name.size() < 256
+          && d.work_to_time is timestamp
+          && d.work_to_track_num is string && d.work_to_track_num.size() < 64
+          && d.last_stop_name is string && d.last_stop_name.size() < 256
+          && d.last_stop_time is timestamp
+          && d.last_stop_track_num is string && d.last_stop_track_num.size() < 64
+          && d.office_name is string && d.office_name.size() < 128
+          && d.work_number is string && d.work_number.size() < 128
+          && d.effected_date is timestamp
+          && d.additional_info is string && d.additional_info.size() < 1024
+          && (d.next_work is path || d.next_work == null)
+        );
+      }
+
+      match /timetables/{TIMETABLE_ID} {
+        allow read: if can_access(getLineData().can_read, request.auth);
+        allow create, update: if can_access(getLineData().can_write, request.auth) && isValidTimetableData(request.resource.data);
     }
   }
 }
