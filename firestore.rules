@@ -83,6 +83,49 @@ service cloud.firestore {
       match /timetables/{TIMETABLE_ID} {
         allow read: if can_access(getLineData().can_read, request.auth);
         allow create, update: if can_access(getLineData().can_write, request.auth) && isValidTimetableData(request.resource.data);
+
+        function isValidStationData(d)
+        {
+          return (
+            d.keys().hasOnly([
+              "full_name",
+              "name_len_4",
+              "location",
+              "required_time_to_this_sta",
+              "arrive_time",
+              "departure_time",
+              "is_pass",
+              "arr_symbol",
+              "dep_symbol",
+              "track_num",
+              "run_in_limit",
+              "run_out_limit",
+              "sta_work",
+              "sta_color"
+            ])
+            && d.full_name is string && d.full_name.size() > 0 && d.full_name.size() < 256
+            && d.name_len_4 is string && d.name_len_4.size() > 0 && d.full_name.size() < 64
+            && d.location is float
+            && d.required_time_to_this_sta is int && d.required_time_to_this_sta >= 0
+            && (d.arrive_time is timestamp || d.arrive_time == null)
+            && (d.departure_time is timestamp || d.departure_time == null)
+            && d.is_pass is bool
+            && d.arr_symbol is string && d.arr_symbol.size() < 16
+            && d.dep_symbol is string && d.dep_symbol.size() < 16
+            && d.track_num is string && d.track_num.size() < 64
+            && d.run_in_limit is int && d.run_in_limit >= 0
+            && d.run_out_limit is int && d.run_out_limit >= 0
+            && d.sta_work is string && d.sta_work.size() < 64
+            && d.sta_color is string && d.sta_color.matches("[0-9a-fA-F]{6}")
+          );
+        }
+
+        match /stations/{STATION_ID} {
+          allow read: if can_access(getLineData().can_read, request.auth);
+          allow create, update: if can_access(getLineData().can_write, request.auth) && isValidStationData(request.resource.data);
+          allow delete: if can_access(getLineData().can_write, request.auth);
+        }
+      }
     }
   }
 }
