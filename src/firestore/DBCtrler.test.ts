@@ -192,5 +192,12 @@ test("Create/Get/Delete Station Test", testRunner(async (env) => {
   expect(get_station_result.data()).toStrictEqual(expect_station_data);
 
   await assertFails(db_anonymous.deleteStationDoc(line_data.id, timetable_data.id, station_data.id));
+
+  const before_delete_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
+  expect(before_delete_result.exists()).toEqual(true);
+
   await assertSucceeds(db_owner.deleteStationDoc(line_data.id, timetable_data.id, station_data.id));
+
+  const after_delete_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
+  expect(after_delete_result.exists()).not.toEqual(true);
 }));
