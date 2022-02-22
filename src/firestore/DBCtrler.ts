@@ -12,7 +12,7 @@ function getDocFromCacheOrServer<T>(docRef: DocumentReference<T>): Promise<Docum
   return getDocFromCache(docRef)
   .then(v => v)
   .catch(reason => {
-    console.warn("get a doc from cache failed (reason:", reason);
+    console.debug("get a doc from cache failed (reason:", reason);
     return getDocFromServer(docRef);
   });
 }
@@ -21,7 +21,7 @@ function getDocsFromCacheOrServer<T>(docRef: Query<T>): Promise<QuerySnapshot<T>
   return getDocsFromCache(docRef)
   .then(v => v)
   .catch(reason => {
-    console.warn("get docs from cache failed (reason:", reason);
+    console.debug("get docs from cache failed (reason:", reason);
     return getDocsFromServer(docRef);
   });
 }
