@@ -39,7 +39,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ci": "rm -rf node_modules && yarn install --frozen-lockfile"
+    "ci": "rm -rf node_modules && yarn install --frozen-lockfile",
+    "test:db": "firebase emulators:exec ./DBCtrler.test.sh --only firestore"
   },
   "eslintConfig": {
     "extends": [
