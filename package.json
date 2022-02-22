@@ -60,6 +60,8 @@
     ]
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^2.0.2"
+    "@firebase/rules-unit-testing": "^2.0.2",
+    "@swc/core": "^1.2.143",
+    "@swc/jest": "^0.2.17"
   }
 }
