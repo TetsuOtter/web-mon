@@ -1,12 +1,8 @@
 import {
   initializeTestEnvironment,
   RulesTestEnvironment,
-  assertFails,
-  assertSucceeds,
   TestEnvironmentConfig,
 } from "@firebase/rules-unit-testing";
-import { DBCtrler } from "./DBCtrler";
-import { TLineDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
 import fs from "fs";
 
 //#region test env
@@ -37,7 +33,7 @@ function getTestEnv(projectId?: string): Promise<RulesTestEnvironment> {
  * @param testFunc テストの本体
  * @returns テストを行う「処理」
  */
-function testRunner(
+export function testRunner(
   testFunc: (testEnv: RulesTestEnvironment) => Promise<unknown>
 ) {
   return () =>
@@ -50,154 +46,3 @@ function testRunner(
 }
 //#endregion
 
-test("Create/Get Line Test", testRunner(async (env) => {
-  const owner_id = "test_user_id";
-  const ctx_owner = env.authenticatedContext(owner_id);
-  const ctx_anonymous = env.unauthenticatedContext();
-
-  const db_owner = new DBCtrler(ctx_owner.firestore());
-  const db_anonymous = new DBCtrler(ctx_anonymous.firestore());
-
-  const expect_line_data: TLineDocument = {
-    can_read: [owner_id],
-    can_write: [owner_id],
-    disp_name: "サンプル線",
-    hashed_read_pw: new Map<string, Date>(),
-    hashed_write_pw: new Map<string, Date>(),
-    tag_list: [],
-    time_multipl: 1
-  };
-  const line_data = await assertSucceeds(db_owner.createNewLineData(owner_id, expect_line_data.disp_name));
-  await assertFails(db_anonymous.getLineDoc(line_data.id));
-  const line_get_result = await assertSucceeds(db_owner.getLineDoc(line_data.id));
-
-  expect(line_get_result.data()).toStrictEqual(expect_line_data);
-}));
-
-test("Create/Get Timetable Test", testRunner(async (env) => {
-  const owner_id = "test_user_id_2";
-  const ctx_owner = env.authenticatedContext(owner_id);
-  const ctx_anonymous = env.unauthenticatedContext();
-
-  const db_owner = new DBCtrler(ctx_owner.firestore());
-  const db_anonymous = new DBCtrler(ctx_anonymous.firestore());
-
-  const expect_line_data: TLineDocument = {
-    can_read: [owner_id],
-    can_write: [owner_id],
-    disp_name: "サンプル線",
-    hashed_read_pw: new Map<string, Date>(),
-    hashed_write_pw: new Map<string, Date>(),
-    tag_list: [],
-    time_multipl: 1
-  };
-  const expect_timetable_data: TTimetableDocument = {
-    tags: [],
-    train_id: "A123D",
-    sec_sys_train_id: "PA123D",
-    sec_sys_sta_pass_setting: false,
-    direction: "Inbound",
-    radio_ch: "A9",
-    line_color: "FF88CC",
-    train_type: "新快速",
-    dep_from_name: "京都",
-    dep_from_time: new Date(),
-    dep_from_track_num: "N1",
-    work_to_name: "大阪",
-    work_to_time: new Date(),
-    work_to_track_num: "OSK99",
-    last_stop_name: "姫路",
-    last_stop_time: new Date(),
-    last_stop_track_num: "HMG123",
-    office_name: "臨時ABC",
-    work_number: "休休999",
-    effected_date: new Date(),
-    additional_info: "付帯情報があれば記載します",
-    next_work: null
-  };
-  const line_data = await assertSucceeds(db_owner.createNewLineData(owner_id, expect_line_data.disp_name));
-  const timetable_data = await assertSucceeds(db_owner.addTimetableDoc(line_data.id, expect_timetable_data));
-  await assertFails(db_anonymous.getTimetableDoc(line_data.id, timetable_data.id));
-  const get_timetable_result = await assertSucceeds(db_owner.getTimetableDoc(line_data.id, timetable_data.id));
-
-  expect(get_timetable_result.data()).toStrictEqual(expect_timetable_data);
-}));
-
-test("Create/Get/Delete Station Test", testRunner(async (env) => {
-  const owner_id = "test_user_id_3";
-  const ctx_owner = env.authenticatedContext(owner_id);
-  const ctx_anonymous = env.unauthenticatedContext();
-
-  const db_owner = new DBCtrler(ctx_owner.firestore());
-  const db_anonymous = new DBCtrler(ctx_anonymous.firestore());
-
-  const expect_line_data: TLineDocument = {
-    can_read: [owner_id],
-    can_write: [owner_id],
-    disp_name: "サンプル線",
-    hashed_read_pw: new Map<string, Date>(),
-    hashed_write_pw: new Map<string, Date>(),
-    tag_list: [],
-    time_multipl: 1
-  };
-  const expect_timetable_data: TTimetableDocument = {
-    tags: [],
-    train_id: "A123D",
-    sec_sys_train_id: "PA123D",
-    sec_sys_sta_pass_setting: false,
-    direction: "Inbound",
-    radio_ch: "A9",
-    line_color: "FF88CC",
-    train_type: "新快速",
-    dep_from_name: "京都",
-    dep_from_time: new Date(),
-    dep_from_track_num: "N1",
-    work_to_name: "大阪",
-    work_to_time: new Date(),
-    work_to_track_num: "OSK99",
-    last_stop_name: "姫路",
-    last_stop_time: new Date(),
-    last_stop_track_num: "HMG123",
-    office_name: "臨時ABC",
-    work_number: "休休999",
-    effected_date: new Date(),
-    additional_info: "付帯情報があれば記載します",
-    next_work: null
-  };
-  const expect_station_data: TStationDocument = {
-    full_name: "省略のない駅名",
-    name_len_4: "四字駅名",
-    location: 1.23,
-    required_time_to_this_sta: 123,
-    arrive_time: null,
-    departure_time: null,
-    is_pass: true,
-    arr_symbol: "↓",
-    dep_symbol: "===",
-    track_num: "南南東12.3番線",
-    run_in_limit: 0,
-    run_out_limit: 99,
-    sta_work: "分",
-    sta_color: "FFFFFF"
-  }
-
-
-  const line_data = await assertSucceeds(db_owner.createNewLineData(owner_id, expect_line_data.disp_name));
-  const timetable_data = await assertSucceeds(db_owner.addTimetableDoc(line_data.id, expect_timetable_data));
-  const station_data = await assertSucceeds(db_owner.addStationDoc(line_data.id, timetable_data.id, expect_station_data));
-
-  await assertFails(db_anonymous.getStationDoc(line_data.id, timetable_data.id, station_data.id));
-  const get_station_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
-
-  expect(get_station_result.data()).toStrictEqual(expect_station_data);
-
-  await assertFails(db_anonymous.deleteStationDoc(line_data.id, timetable_data.id, station_data.id));
-
-  const before_delete_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
-  expect(before_delete_result.exists()).toEqual(true);
-
-  await assertSucceeds(db_owner.deleteStationDoc(line_data.id, timetable_data.id, station_data.id));
-
-  const after_delete_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
-  expect(after_delete_result.exists()).not.toEqual(true);
-}));
