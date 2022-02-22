@@ -3,7 +3,7 @@ import { DocumentReference, Timestamp } from "firebase/firestore";
 export type TFirestoreDictionary<TData> = { [key: string]: TData; };
 
 /** 路線データのデータ構造 */
-interface _ILineDocument<TDate>
+interface _ILineDocument<TMap>
 {
   /**
    * 読み込み可能なユーザの一覧
@@ -26,10 +26,10 @@ interface _ILineDocument<TDate>
   tag_list: string[],
 
   /** READ権限付与に使用できるハッシュ化パスワードの一覧 (key: ハッシュ化パスワード / value: 有効期限) */
-  hashed_read_pw: TFirestoreDictionary<TDate> | null,
+  hashed_read_pw: TMap,
 
   /** WRITE権限付与に使用できるハッシュ化パスワードの一覧 (key: ハッシュ化パスワード / value: 有効期限) */
-  hashed_write_pw: TFirestoreDictionary<TDate> | null,
+  hashed_write_pw: TMap,
 
   /**
    * 時間の加速具合 (通常は「1」を指定する)
@@ -39,9 +39,9 @@ interface _ILineDocument<TDate>
 };
 
 /** 路線データのデータ構造 */
-export type TLineDocument = _ILineDocument<Date>;
+export type TLineDocument = _ILineDocument<Map<string, Date>>;
 /** 路線データのデータ構造 (サーバーサイド用) */
-export type TServerSideLineDocument = _ILineDocument<Timestamp>;
+export type TServerSideLineDocument = _ILineDocument<TFirestoreDictionary<Timestamp>>;
 
 /** 方向情報 */
 export type TDirection = "Inbound" | "Outbound";
