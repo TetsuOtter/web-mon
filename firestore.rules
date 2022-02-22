@@ -2,11 +2,31 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isValidLineData(d)
+    function getLineDataFieldNames()
+    {
+      return [
+        "can_read",
+        "can_write",
+        "disp_name",
+        "tag_list",
+        "hashed_read_pw",
+        "hashed_write_pw",
+        "time_multipl"
+        ];
+    }
+
+    function hasAllLineDataFields(d)
+    {
+      return d.keys().hasAll(getLineDataFieldNames());
+    }
+    function hasOnlyLineDataFields(d)
+    {
+      return d.keys().hasOnly(getLineDataFieldNames());
+    }
+    function isValidLineDataFieldTypes(d)
     {
       return (
-        d.keys().hasOnly(["can_read", "can_write", "disp_name", "tag_list", "hashed_read_pw", "hashed_write_pw", "time_multipl"])
-        && d.can_read is list && d.can_read.size() > 0
+        d.can_read is list && d.can_read.size() > 0
         && d.can_write is list && d.can_write.size() > 0
         && d.disp_name is string
         && d.tag_list is list
@@ -20,42 +40,60 @@ service cloud.firestore {
     }
     match /line/{LINE_ID} {
       allow read: if can_access(resource.data.can_read, request.auth);
-      allow create: if request.auth != null && isValidLineData(request.resource.data);
-      allow update: if can_access(resource.data.can_write, request.auth) && isValidLineData(request.resource.data);
+      allow create: if
+        request.auth != null
+        && hasAllLineDataFields(request.resource.data)
+        && hasOnlyLineDataFields(request.resource.data)
+        && isValidLineDataFieldTypes(request.resource.data);
+      allow update: if
+        can_access(resource.data.can_write, request.auth)
+        && hasOnlyLineDataFields(request.resource.data)
+        && isValidLineDataFieldTypes(request.resource.data);
       // deleteはadmin-sdkでのみ許可
 
       function getLineData()
       {
         return get(path(["databases", database, "documents", "line", LINE_ID].join("/"))).data;
       }
-      function isValidTimetableData(d)
+      function getTimetableDataFieldNames()
+      {
+        return [
+          "tags",
+          "train_id",
+          "sec_sys_train_id",
+          "sec_sys_sta_pass_setting",
+          "direction",
+          "radio_ch",
+          "line_color",
+          "train_type",
+          "dep_from_name",
+          "dep_from_time",
+          "dep_from_track_num",
+          "work_to_name",
+          "work_to_time",
+          "work_to_track_num",
+          "last_stop_name",
+          "last_stop_time",
+          "last_stop_track_num",
+          "office_name",
+          "work_number",
+          "effected_date",
+          "additional_info",
+          "next_work"
+        ];
+      }
+      function hasAllTimetableDataFields(d)
+      {
+        return d.keys().hasAll(getTimetableDataFieldNames());
+      }
+      function hasOnlyTimetableDataFields(d)
+      {
+        return d.keys().hasOnly(getTimetableDataFieldNames());
+      }
+      function isValidTimetableDataFieldTypes(d)
       {
         return (
-          d.keys().hasOnly([
-            "tags",
-            "train_id",
-            "sec_sys_train_id",
-            "sec_sys_sta_pass_setting",
-            "direction",
-            "radio_ch",
-            "line_color",
-            "train_type",
-            "dep_from_name",
-            "dep_from_time",
-            "dep_from_track_num",
-            "work_to_name",
-            "work_to_time",
-            "work_to_track_num",
-            "last_stop_name",
-            "last_stop_time",
-            "last_stop_track_num",
-            "office_name",
-            "work_number",
-            "effected_date",
-            "additional_info",
-            "next_work"
-          ])
-          && d.tags is list && d.tags.size() < 16
+          d.tags is list && d.tags.size() < 16
           && d.train_id is string && d.train_id.size() > 0 && d.train_id.size() < 128
           && d.sec_sys_train_id is string && d.sec_sys_train_id.size() < 128
           && d.sec_sys_sta_pass_setting is bool
@@ -82,28 +120,47 @@ service cloud.firestore {
 
       match /timetables/{TIMETABLE_ID} {
         allow read: if can_access(getLineData().can_read, request.auth);
-        allow create, update: if can_access(getLineData().can_write, request.auth) && isValidTimetableData(request.resource.data);
+        allow create: if
+          can_access(getLineData().can_write, request.auth)
+          && hasAllTimetableDataFields(request.resource.data)
+          && hasOnlyTimetableDataFields(request.resource.data)
+          && isValidTimetableDataFieldTypes(request.resource.data);
+        allow update: if
+          can_access(getLineData().can_write, request.auth)
+          && hasOnlyTimetableDataFields(request.resource.data)
+          && isValidTimetableDataFieldTypes(request.resource.data);
 
-        function isValidStationData(d)
+        function getStationDataFieldNames()
+        {
+          return [
+            "full_name",
+            "name_len_4",
+            "location",
+            "required_time_to_this_sta",
+            "arrive_time",
+            "departure_time",
+            "is_pass",
+            "arr_symbol",
+            "dep_symbol",
+            "track_num",
+            "run_in_limit",
+            "run_out_limit",
+            "sta_work",
+            "sta_color"
+          ];
+        }
+        function hasAllStationDataFields(d)
+        {
+          return d.keys().hasAll(getStationDataFieldNames());
+        }
+        function hasOnlyStationDataFields(d)
+        {
+          return d.keys().hasOnly(getStationDataFieldNames());
+        }
+        function isValidStationDataFieldTypes(d)
         {
           return (
-            d.keys().hasOnly([
-              "full_name",
-              "name_len_4",
-              "location",
-              "required_time_to_this_sta",
-              "arrive_time",
-              "departure_time",
-              "is_pass",
-              "arr_symbol",
-              "dep_symbol",
-              "track_num",
-              "run_in_limit",
-              "run_out_limit",
-              "sta_work",
-              "sta_color"
-            ])
-            && d.full_name is string && d.full_name.size() > 0 && d.full_name.size() < 256
+            d.full_name is string && d.full_name.size() > 0 && d.full_name.size() < 256
             && d.name_len_4 is string && d.name_len_4.size() > 0 && d.full_name.size() < 64
             && d.location is float
             && d.required_time_to_this_sta is int && d.required_time_to_this_sta >= 0
@@ -122,7 +179,15 @@ service cloud.firestore {
 
         match /stations/{STATION_ID} {
           allow read: if can_access(getLineData().can_read, request.auth);
-          allow create, update: if can_access(getLineData().can_write, request.auth) && isValidStationData(request.resource.data);
+          allow create: if
+            can_access(getLineData().can_write, request.auth)
+            && hasAllStationDataFields(request.resource.data)
+            && hasOnlyStationDataFields(request.resource.data)
+            && isValidStationDataFieldTypes(request.resource.data);
+          allow update: if
+            can_access(getLineData().can_write, request.auth)
+            && hasOnlyStationDataFields(request.resource.data)
+            && isValidStationDataFieldTypes(request.resource.data);
           allow delete: if can_access(getLineData().can_write, request.auth);
         }
       }
