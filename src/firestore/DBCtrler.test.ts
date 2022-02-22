@@ -3,6 +3,7 @@ import {
   RulesTestEnvironment,
   assertFails,
   assertSucceeds,
+  TestEnvironmentConfig,
 } from "@firebase/rules-unit-testing";
 import { DBCtrler } from "./DBCtrler";
 import { TLineDocument } from "./DBCtrler.types";
@@ -15,7 +16,7 @@ import fs from "fs";
  * @returns テスト環境情報
  */
 function getTestEnv(projectId?: string): Promise<RulesTestEnvironment> {
-  return initializeTestEnvironment({
+  const cfg: TestEnvironmentConfig = {
     projectId:
       "demo-" +
       (projectId ?? Math.floor(Math.random() * Math.pow(10, 8)).toString()),
@@ -24,7 +25,11 @@ function getTestEnv(projectId?: string): Promise<RulesTestEnvironment> {
       port: 8080,
       rules: fs.readFileSync("firestore.rules", "utf8"),
     },
-  });
+  };
+
+  console.info("Current Project ID: ", cfg.projectId);
+
+  return initializeTestEnvironment(cfg);
 }
 
 /**
