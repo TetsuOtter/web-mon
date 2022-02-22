@@ -59,5 +59,7 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^2.0.2"
+  }
 }
