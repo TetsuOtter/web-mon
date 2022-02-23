@@ -82,7 +82,11 @@ export class DBCtrler
 
   public getLineDocs(user_id?: string): Promise<QuerySnapshot<TLineDocument>>
   {
-    return this.getDocsFromCacheOrServer(query(this._LineCollectionRef(), where("can_read", "array-contains-any", ["", user_id])));
+    const user_id_arr = [""];
+    if (user_id !== undefined)
+      user_id_arr.push(user_id);
+
+    return this.getDocsFromCacheOrServer(query(this._LineCollectionRef(), where("can_read", "array-contains-any", user_id_arr)));
   }
 
   public getTimetableDoc(line_id: string, timetable_id: string): Promise<DocumentSnapshot<TTimetableDocument>>
