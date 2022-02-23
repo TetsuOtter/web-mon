@@ -7,32 +7,42 @@ const COLLECTION_NAME_LINE = "line";
 const COLLECTION_NAME_TIMETABLE = "timetables";
 const COLLECTION_NAME_STATION = "stations";
 
-function getDocFromCacheOrServer<T>(docRef: DocumentReference<T>): Promise<DocumentSnapshot<T>>
-{
-  return getDocFromCache(docRef)
-  .then(v => v)
-  .catch(reason => {
-    console.debug("get a doc from cache failed (reason:", reason);
-    return getDocFromServer(docRef);
-  });
-}
-function getDocsFromCacheOrServer<T>(docRef: Query<T>): Promise<QuerySnapshot<T>>
-{
-  return getDocsFromCache(docRef)
-  .then(v => v)
-  .catch(reason => {
-    console.debug("get docs from cache failed (reason:", reason);
-    return getDocsFromServer(docRef);
-  });
-}
-
 export class DBCtrler
 {
   public readonly db: Firestore;
 
-  constructor(db: Firestore | CompatFirestore)
+  public loadFromServerAnyway: boolean;
+
+  constructor(db: Firestore | CompatFirestore, loadFromServerAnyway?: boolean)
   {
     this.db = db as Firestore;
+    this.loadFromServerAnyway = loadFromServerAnyway ?? false;
+  }
+
+  private getDocFromCacheOrServer<T>(docRef: DocumentReference<T>): Promise<DocumentSnapshot<T>>
+  {
+    if (this.loadFromServerAnyway)
+      return getDocFromServer(docRef);
+
+    return getDocFromCache(docRef)
+    .then(v => v)
+    .catch(reason => {
+      console.debug("get a doc from cache failed (reason:", reason);
+      return getDocFromServer(docRef);
+    });
+  }
+
+  private getDocsFromCacheOrServer<T>(docRef: Query<T>): Promise<QuerySnapshot<T>>
+  {
+    if (this.loadFromServerAnyway)
+      return getDocsFromServer(docRef);
+
+    return getDocsFromCache(docRef)
+    .then(v => v)
+    .catch(reason => {
+      console.debug("get docs from cache failed (reason:", reason);
+      return getDocsFromServer(docRef);
+    });
   }
 
   //#region Reference Generators
@@ -67,26 +77,26 @@ export class DBCtrler
   //#region get methods
   public getLineDoc(line_id: string): Promise<DocumentSnapshot<TLineDocument>>
   {
-    return getDocFromCacheOrServer(this._LineDocRef(line_id));
+    return this.getDocFromCacheOrServer(this._LineDocRef(line_id));
   }
 
   public getLineDocs(user_id?: string): Promise<QuerySnapshot<TLineDocument>>
   {
-    return getDocsFromCacheOrServer(query(this._LineCollectionRef(), where("can_read", "array-contains-any", ["", user_id])));
+    return this.getDocsFromCacheOrServer(query(this._LineCollectionRef(), where("can_read", "array-contains-any", ["", user_id])));
   }
 
   public getTimetableDoc(line_id: string, timetable_id: string): Promise<DocumentSnapshot<TTimetableDocument>>
   {
-    return getDocFromCacheOrServer(this._TimetableDocRef(line_id, timetable_id));
+    return this.getDocFromCacheOrServer(this._TimetableDocRef(line_id, timetable_id));
   }
 
   public getAllTimetableDocs(line_id: string): Promise<QuerySnapshot<TTimetableDocument>>
   {
-    return getDocsFromCacheOrServer(this._TimetableCollectionRef(line_id));
+    return this.getDocsFromCacheOrServer(this._TimetableCollectionRef(line_id));
   }
   public getTimetableDocs_Query(line_id: string, ...queryArr: QueryConstraint[]): Promise<QuerySnapshot<TTimetableDocument>>
   {
-    return getDocsFromCacheOrServer(query(this._TimetableCollectionRef(line_id), ...queryArr));
+    return this.getDocsFromCacheOrServer(query(this._TimetableCollectionRef(line_id), ...queryArr));
   }
   public getTimetableDocs_Tag(line_id: string, tag: string): Promise<QuerySnapshot<TTimetableDocument>>
   {
@@ -99,12 +109,12 @@ export class DBCtrler
 
   public getStationDoc(line_id: string, timetable_id: string, station_id: string): Promise<DocumentSnapshot<TStationDocument>>
   {
-    return getDocFromCacheOrServer(this._StationDocRef(line_id, timetable_id, station_id));
+    return this.getDocFromCacheOrServer(this._StationDocRef(line_id, timetable_id, station_id));
   }
 
   public get1to9StationDocs(line_id: string, timetable_id: string): Promise<QuerySnapshot<TStationDocument>>
   {
-    return getDocsFromCacheOrServer(query(this._StationCollectionRef(line_id, timetable_id), orderBy("location")));
+    return this.getDocsFromCacheOrServer(query(this._StationCollectionRef(line_id, timetable_id), orderBy("location")));
   }
   //#endregion
 
