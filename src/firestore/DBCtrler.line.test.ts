@@ -12,8 +12,8 @@ test("Create/Get Line Test", testRunner(async (env) => {
   const ctx_owner = env.authenticatedContext(owner_id);
   const ctx_anonymous = env.unauthenticatedContext();
 
-  const db_owner = new DBCtrler(ctx_owner.firestore());
-  const db_anonymous = new DBCtrler(ctx_anonymous.firestore());
+  const db_owner = new DBCtrler(ctx_owner.firestore(), true);
+  const db_anonymous = new DBCtrler(ctx_anonymous.firestore(), true);
 
   const expect_line_data: TLineDocument = {
     can_read: [owner_id],
@@ -35,7 +35,7 @@ test("LineData: Invalid Elements DataType Error Test", testRunner(async (env) =>
   const owner_id = "test_user_id";
   const ctx_owner = env.authenticatedContext(owner_id);
 
-  const db_owner = new DBCtrler(ctx_owner.firestore());
+  const db_owner = new DBCtrler(ctx_owner.firestore(), true);
 
   const expect_line_data: TServerSideLineDocument = {
     can_read: [owner_id],
@@ -60,7 +60,7 @@ test("LineData: Too Less/Much Data Error Test", testRunner(async (env) => {
   const owner_id = "test_user_id";
   const ctx_owner = env.authenticatedContext(owner_id);
 
-  const db_owner = new DBCtrler(ctx_owner.firestore());
+  const db_owner = new DBCtrler(ctx_owner.firestore(), true);
 
   const expect_line_data: TServerSideLineDocument = {
     can_read: [owner_id],
