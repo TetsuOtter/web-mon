@@ -158,3 +158,25 @@ test("Create/Get/Update Many Line Test", testRunner(async (env) => {
   expect(getLinesResult3_3.size).toBe(2); // サンプル線3, サンプル線o1r2rw3
   expect(getLinesResult3_Anonymous.size).toBe(0); // empty
 }));
+
+test("Change Line Data Fields Test", testRunner(async (env) => {
+  const owner_id = "test_user_id";
+  const ctx_owner = env.authenticatedContext(owner_id);
+  const db_owner = new DBCtrler(ctx_owner.firestore(), true);
+
+  const line1add = await assertSucceeds(db_owner.createNewLineData(owner_id, "LINE1"));
+
+  await assertSucceeds(db_owner.changeLineDispName(line1add.id, "LINE1N"));
+  await assertSucceeds(db_owner.addTagsToLineDoc(line1add.id, "tag1", "tag2"));
+  await assertSucceeds(db_owner.updateTimeMultipl(line1add.id, 60));
+
+  const afterUpdate = await assertSucceeds(db_owner.getLineDoc(line1add.id));
+  expect(afterUpdate.data()?.disp_name).toBe("LINE1N");
+  expect(afterUpdate.data()?.tag_list.length).toBe(2);
+  expect(afterUpdate.data()?.time_multipl).toBe(60);
+
+  await assertSucceeds(db_owner.removeTagsToLineDoc(line1add.id, "tag0", "tag2"));
+  const afterRemoveTags = await assertSucceeds(db_owner.getLineDoc(line1add.id));
+  expect(afterRemoveTags.data()?.tag_list.length).toBe(1);
+  expect(afterRemoveTags.data()?.tag_list[0]).toBe("tag1");
+}));
