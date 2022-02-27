@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: "JF-Dot-jiskan16s";
+  src: url(/JF-Dot-jiskan16s.ttf);
+}
