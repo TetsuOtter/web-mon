@@ -16,3 +16,7 @@ code {
   font-family: "JF-Dot-jiskan16s";
   src: url(/JF-Dot-jiskan16s.ttf);
 }
+@font-face {
+  font-family: "JF-Dot-Shinonome12";
+  src: url(/JF-Dot-Shinonome12.ttf);
+}
