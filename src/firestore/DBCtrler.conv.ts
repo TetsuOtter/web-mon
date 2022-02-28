@@ -85,8 +85,6 @@ export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
     const d = _d as TStationDocument;
     const ret: TServerSideStationDocument = {
       ...d,
-      arrive_time: toTimestampOrNull(d.arrive_time),
-      departure_time: toTimestampOrNull(d.departure_time)
     };
 
     return ret;
@@ -97,8 +95,6 @@ export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
 
     return {
       ...d,
-      arrive_time: d.arrive_time?.toDate() ?? null,
-      departure_time: d.departure_time?.toDate() ?? null
     };
   }
 }
