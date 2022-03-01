@@ -22,14 +22,6 @@ function toDic(map: any): TFirestoreDictionary<Timestamp> | undefined
     return undefined;
 }
 
-function toTimestampOrNull(value: Date | null): Timestamp | null
-{
-  if (value === null)
-    return null;
-  else
-    return Timestamp.fromDate(value);
-}
-
 export const LineDocConverter: FirestoreDataConverter<TLineDocument> = {
   toFirestore: (_d) => {
     const d = _d as TLineDocument;
