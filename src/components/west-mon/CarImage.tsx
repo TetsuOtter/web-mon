@@ -1,3 +1,5 @@
+import moji from "moji";
+
 export interface CarImageProps
 {
   isDriversCar?: boolean,
@@ -7,7 +9,7 @@ export interface CarImageProps
   isRightPanAvailable?: boolean,
   isLeftPanUp?: boolean,
   isRightPanUp?: boolean,
-  carNumber?: number,
+  carNumber?: number | string,
   carDescriptionChars?: string,
   width?: number,
   fill?: string,
@@ -19,6 +21,29 @@ export interface CarImageProps
   isRightBogieRightWheelMotored?: boolean,
   x: number | string,
   y: number | string,
+}
+
+function getCarNumberStr(num: number | string | undefined) : string
+{
+  if (num === undefined)
+    return "";
+
+  // 文字列で渡されたらそのまま返す
+  if (typeof num === "string")
+    return num;
+
+  // 負の号車番号は表示しない
+  if (num < 0)
+    return "";
+
+  // 数値を文字列にする (整数として文字列化する)
+  const numStr = num.toFixed(0).toString();
+
+  // 1桁は全角として表示する
+  // 2桁以上は半角として表示する
+  if (num < 10)
+    return moji(numStr).convert("HE", "ZE").toString();
+  return numStr;
 }
 
 export const CarImage = (props: CarImageProps) => {
@@ -131,7 +156,7 @@ export const CarImage = (props: CarImageProps) => {
         fontFamily="JF-Dot-Shinonome12"
       >{props.carDescriptionChars}</text>
       <text x={width / 2} y="44" textAnchor="middle" fontSize="16px" fill={props.textColor}>{props.text}</text>
-      <text x={width / 2} y="72" textAnchor="middle" fontSize="16px" fill="white">{props.carNumber}</text>
+      <text x={width / 2} y="72" textAnchor="middle" fontSize="16px" fill="white">{getCarNumberStr(props.carNumber)}</text>
     </svg>
   );
 }
