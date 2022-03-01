@@ -36,14 +36,15 @@ function getCarNumberStr(num: number | string | undefined) : string
   if (num < 0)
     return "";
 
-  // 数値を文字列にする (整数として文字列化する)
-  const numStr = num.toFixed(0).toString();
+  // 数値を文字列にする
+  const numStr = num.toString();
 
   // 1桁は全角として表示する
   // 2桁以上は半角として表示する
-  if (num < 10)
+  if (numStr.length === 1)
     return moji(numStr).convert("HE", "ZE").toString();
-  return numStr;
+  else
+    return numStr;
 }
 
 export const CarImage = (props: CarImageProps) => {
