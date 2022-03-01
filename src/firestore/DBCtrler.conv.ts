@@ -1,4 +1,4 @@
-import { doc, FirestoreDataConverter, Timestamp } from "firebase/firestore";
+import { FirestoreDataConverter, Timestamp } from "firebase/firestore";
 import { TFirestoreDictionary, TLineDocument, TServerSideLineDocument, TServerSideStationDocument, TServerSideTimetableDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
 
 function toMap(dic: TFirestoreDictionary<Timestamp>): Map<string, Date>
