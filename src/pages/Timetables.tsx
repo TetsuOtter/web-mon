@@ -29,6 +29,7 @@ export const Timetables = () => {
   useEffect(() => {
     if (params.line_id !== undefined)
       db.getAllTimetableDocs(params.line_id).then(result => setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data()))));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (<MaterialTable
