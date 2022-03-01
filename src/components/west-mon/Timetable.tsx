@@ -12,8 +12,8 @@ export interface TimetableProps
 export const Timetable = (props: TimetableProps) => {
   const staD: TStationDocument = {
     arr_symbol: "：",
-    arrive_time_hh: "２３",
-    arrive_time_mm: "５９",
+    arrive_time_hh: "23",
+    arrive_time_mm: "59",
     arrive_time_ss: "59",
     dep_symbol: "===",
     departure_time_hh: "",
