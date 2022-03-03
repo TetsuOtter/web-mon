@@ -1,4 +1,4 @@
-import { doc, FirestoreDataConverter, Timestamp } from "firebase/firestore";
+import { FirestoreDataConverter, Timestamp } from "firebase/firestore";
 import { TFirestoreDictionary, TLineDocument, TServerSideLineDocument, TServerSideStationDocument, TServerSideTimetableDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
 
 function toMap(dic: TFirestoreDictionary<Timestamp>): Map<string, Date>
@@ -20,14 +20,6 @@ function toDic(map: any): TFirestoreDictionary<Timestamp> | undefined
   }
   else
     return undefined;
-}
-
-function toTimestampOrNull(value: Date | null): Timestamp | null
-{
-  if (value === null)
-    return null;
-  else
-    return Timestamp.fromDate(value);
 }
 
 export const LineDocConverter: FirestoreDataConverter<TLineDocument> = {
@@ -85,8 +77,6 @@ export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
     const d = _d as TStationDocument;
     const ret: TServerSideStationDocument = {
       ...d,
-      arrive_time: toTimestampOrNull(d.arrive_time),
-      departure_time: toTimestampOrNull(d.departure_time)
     };
 
     return ret;
@@ -97,8 +87,6 @@ export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
 
     return {
       ...d,
-      arrive_time: d.arrive_time?.toDate() ?? null,
-      departure_time: d.departure_time?.toDate() ?? null
     };
   }
 }

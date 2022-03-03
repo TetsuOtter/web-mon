@@ -127,7 +127,7 @@ export type TTimetableDocument = _ITimetableDocument<Date>;
 /** 時刻表データのデータ構造 (サーバーサイド用) */
 export type TServerSideTimetableDocument = _ITimetableDocument<Timestamp>;
 
-interface _IStationDocument<TDate>
+interface _IStationDocument
 {
   /** 駅名(省略なし) */
   full_name: string,
@@ -141,11 +141,23 @@ interface _IStationDocument<TDate>
   /** 前の採時駅からこの駅までの所要時間 (「0」で非表示) */
   required_time_to_this_sta: number,
 
-  /** 到着時刻 (nullで非表示) */
-  arrive_time: TDate | null,
+  /** 到着時刻 (「時」の部分) */
+  arrive_time_hh: string,
 
-  /** 発車/通過時刻 (nullで非表示  終着駅の場合もnullにする) */
-  departure_time: TDate | null,
+  /** 到着時刻 (「分」の部分) */
+  arrive_time_mm: string,
+
+  /** 到着時刻 (「秒」の部分) */
+  arrive_time_ss: string,
+
+  /** 発車/通過時刻 (「時」の部分) */
+  departure_time_hh: string,
+
+  /** 発車/通過時刻 (「分」の部分) */
+  departure_time_mm: string,
+
+  /** 発車/通過時刻 (「秒」の部分) */
+  departure_time_ss: string,
 
   /** 通過駅かどうか */
   is_pass: boolean,
@@ -181,6 +193,6 @@ interface _IStationDocument<TDate>
 };
 
 /** 駅情報データのデータ構造 */
-export type TStationDocument = _IStationDocument<Date>;
+export type TStationDocument = _IStationDocument;
 /** 駅情報データのデータ構造 (サーバーサイド用) */
-export type TServerSideStationDocument = _IStationDocument<Timestamp>;
+export type TServerSideStationDocument = _IStationDocument;
