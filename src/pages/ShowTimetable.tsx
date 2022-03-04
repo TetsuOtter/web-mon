@@ -1,10 +1,10 @@
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { DBCtrler } from '../firestore/DBCtrler';
-import { TStationDocument, TTimetableDocument } from '../firestore/DBCtrler.types';
+import { TStationDocument } from '../firestore/DBCtrler.types';
 import { firestore } from '../firestore/firebaseApp';
-import { SHOW_TIMETABLE_PAGE_URL, WEST_MON_PAGE_ID } from "../index";
+import { generateParams, getIDParams, WEST_MON_PAGE_ID } from "../index";
 
 interface StationDataWithID extends TStationDocument
 {
@@ -12,26 +12,22 @@ interface StationDataWithID extends TStationDocument
   station_id: string,
 }
 
-type TParams = {
-  line_id: string,
-  timetable_id: string,
-};
-
 export const ShowTimetable = () => {
   // const [timetableData, setTimetableData] = useState<TTimetableDocument>();
   const [stationsData, setStationsData] = useState<StationDataWithID[]>([]);
   const navigate = useNavigate();
-  const params = useParams<TParams>();
+  const params = getIDParams(useLocation());
   const db = new DBCtrler(firestore, true);
 
   useEffect(() => {
-    if (params.line_id !== undefined && params.timetable_id)
+    if (params["line-id"] !== undefined && params["timetable-id"] !== undefined)
     {
-      /*db.getTimetableDoc(params.line_id, params.timetable_id)
+      /*db.getTimetableDoc(params["line-id"], params["timetable-id"])
         .then(v => setTimetableData(v.data()));*/
-      db.get1to9StationDocs(params.line_id, params.timetable_id)
+      db.get1to9StationDocs(params["line-id"], params["timetable-id"])
         .then(v => setStationsData(v.docs.map(d => ({ ...d.data(), station_id: d.id }))));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (<MaterialTable
@@ -58,8 +54,8 @@ export const ShowTimetable = () => {
         tooltip: "開く",
         onClick: (_, data) => {
           const d = Array.isArray(data) ? data[0] : data;
-          if (params.line_id !== undefined)
-            navigate(`${SHOW_TIMETABLE_PAGE_URL}/${params.line_id}/${params.timetable_id}/${WEST_MON_PAGE_ID}/${d.station_id}`);
+          if (params["line-id"] !== undefined)
+            navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": params["line-id"], "timetable-id": params["timetable-id"], "station-id": d.station_id })}`);
         }
       },
       {
@@ -68,10 +64,10 @@ export const ShowTimetable = () => {
         onClick: (_, data) => {
           const d = Array.isArray(data) ? data[0] : data;
 
-          if (params.line_id === undefined || params.timetable_id === undefined)
+          if (params["line-id"] === undefined || params["timetable-id"] === undefined)
             return;
 
-          db.getStationDoc(params.line_id, params.timetable_id, d.station_id).then(result => {
+          db.getStationDoc(params["line-id"], params["timetable-id"], d.station_id).then(result => {
             const index = stationsData.findIndex(v => v.station_id === d.station_id);
             const orig = Array.from(stationsData);
             const data = result.data();
