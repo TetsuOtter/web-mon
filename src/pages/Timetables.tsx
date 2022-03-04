@@ -1,10 +1,10 @@
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { DBCtrler } from '../firestore/DBCtrler';
 import { TTimetableDocument } from '../firestore/DBCtrler.types';
 import { firestore } from '../firestore/firebaseApp';
-import { SHOW_TIMETABLE_PAGE_URL, WEST_MON_PAGE_ID } from "../index";
+import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 
 interface TimetableDataTableStruct extends TTimetableDocument
 {
@@ -23,12 +23,12 @@ function toTimetableDataTableStruct(id: string, d: TTimetableDocument): Timetabl
 export const Timetables = () => {
   const [timetableData, setTimetableData] = useState<TimetableDataTableStruct[]>([]);
   const navigate = useNavigate();
-  const params = useParams<"line_id">();
+  const params = getIDParams(useLocation());
   const db = new DBCtrler(firestore, true);
 
   useEffect(() => {
-    if (params.line_id !== undefined)
-      db.getAllTimetableDocs(params.line_id).then(result => setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data()))));
+    if (params["line-id"] !== undefined)
+      db.getAllTimetableDocs(params["line-id"]).then(result => setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data()))));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -49,8 +49,8 @@ export const Timetables = () => {
         tooltip: "開く",
         onClick: (_, data) => {
           const d = Array.isArray(data) ? data[0] : data;
-          if (params.line_id !== undefined)
-            navigate(`${SHOW_TIMETABLE_PAGE_URL}/${params.line_id}/${d.timetable_id}/${WEST_MON_PAGE_ID}`);
+          if (params["line-id"] !== undefined)
+            navigate(`${SHOW_TIMETABLE_PAGE_URL}${generateParams({ "line-id": params["line-id"], "timetable-id": d.timetable_id })}`);
         }
       },
       {
@@ -59,10 +59,10 @@ export const Timetables = () => {
         onClick: (_, data) => {
           const d = Array.isArray(data) ? data[0] : data;
 
-          if (params.line_id === undefined)
+          if (params["line-id"] === undefined)
             return;
 
-          db.getTimetableDoc(params.line_id, d.timetable_id).then(result => {
+          db.getTimetableDoc(params["line-id"], d.timetable_id).then(result => {
             const index = timetableData.findIndex(v => v.timetable_id === d.timetable_id);
             const orig = Array.from(timetableData);
             const data = result.data();

@@ -1,7 +1,7 @@
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TIMETABLE_SELECT_PAGE_URL } from '../index';
+import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
 import { DBCtrler } from '../firestore/DBCtrler';
 import { TLineDocument } from '../firestore/DBCtrler.types';
 import { firestore } from '../firestore/firebaseApp';
@@ -55,7 +55,7 @@ export const Lines = () => {
         tooltip: "開く",
         onClick: (_, data) => {
           const d = Array.isArray(data) ? data[0] : data;
-          navigate(`${TIMETABLE_SELECT_PAGE_URL}/${d.line_id}`);
+          navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({"line-id": d.line_id})}`);
         }
       },
       {
