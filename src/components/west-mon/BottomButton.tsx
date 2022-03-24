@@ -6,7 +6,7 @@ interface BottomButtonProps
   isSelected?: boolean,
   text?: string,
   onClick?: MouseEventHandler<SVGSVGElement>,
-  visibility?: VisibilityState | "collapse",
+  visibility?: "hidden" | "visible" | "collapse",
 }
 
 export const BottomButton = (props: BottomButtonProps) => {
