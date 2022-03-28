@@ -23,7 +23,7 @@ const COLUMNS: Column<LineDataTableStruct>[] = [
   { title: "書き込み制限", field: "can_write_str" },
   { title: "タグ一覧", field: "tag_list_str" },
   { title: "時間の加速設定", field: "time_multipl" },
-  { title: "(内部ID)", field: "line_id" },
+  { title: "(内部ID)", field: "line_id", editable: "never" },
 ];
 
 function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct

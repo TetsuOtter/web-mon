@@ -20,7 +20,7 @@ const COLUMNS: Column<TimetableDataTableStruct>[] = [
   { title: "乗務開始時刻", field: "dep_from_time", type: "time" },
   { title: "乗務終了駅", field: "work_to_name" },
   { title: "乗務終了時刻", field: "work_to_time", type: "time" },
-  { title: "(内部ID)", field: "timetable_id" },
+  { title: "(内部ID)", field: "timetable_id", editable: "never" },
 ];
 
 function toTimetableDataTableStruct(id: string, d: TTimetableDocument): TimetableDataTableStruct

@@ -27,7 +27,7 @@ const COLUMNS: Column<StationDataWithID>[] = [
   { title: "進出\n制限\n[km/h]", field: "run_out_limit", type: "numeric" },
   { title: "駅仕業", field: "sta_work" },
   { title: "表示色", field: "sta_color" },
-  { title: "(内部ID)", field: "station_id" },
+  { title: "(内部ID)", field: "station_id", editable: "never" },
 ];
 
 export const ShowTimetable = () => {
