@@ -1,4 +1,4 @@
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column } from 'material-table';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
@@ -16,6 +16,15 @@ interface LineDataTableStruct
   tag_list_str: string,
   time_multipl: number,
 }
+
+const COLUMNS: Column<LineDataTableStruct>[] = [
+  { title: "表示名", field: "disp_name" },
+  { title: "読み取り制限", field: "can_read_str" },
+  { title: "書き込み制限", field: "can_write_str" },
+  { title: "タグ一覧", field: "tag_list_str" },
+  { title: "時間の加速設定", field: "time_multipl" },
+  { title: "(内部ID)", field: "line_id" },
+];
 
 function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct
 {
@@ -40,42 +49,39 @@ export const Lines = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (<MaterialTable
-    columns={[
-      { title: "表示名", field: "disp_name" },
-      { title: "読み取り制限", field: "can_read_str" },
-      { title: "書き込み制限", field: "can_write_str" },
-      { title: "タグ一覧", field: "tag_list_str" },
-      { title: "時間の加速設定", field: "time_multipl" },
-      { title: "(内部ID)", field: "line_id" },
-    ]}
-    actions={[
-      {
-        icon: "open_in_browser",
-        tooltip: "開く",
-        onClick: (_, data) => {
-          const d = Array.isArray(data) ? data[0] : data;
-          navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({"line-id": d.line_id})}`);
-        }
-      },
-      {
-        icon: "refresh",
-        tooltip: "更新",
-        onClick: (_, data) => {
-          const d = Array.isArray(data) ? data[0] : data;
+  const OPEN_THIS_LINE: Action<LineDataTableStruct> = {
+    icon: "open_in_browser",
+    tooltip: "開く",
+    onClick: (_, data) => {
+      const d = Array.isArray(data) ? data[0] : data;
+      navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({"line-id": d.line_id})}`);
+    }
+  };
 
-          db.getLineDoc(d.line_id).then(result => {
-            const index = lineData.findIndex(v => v.line_id === d.line_id);
-            const orig = Array.from(lineData);
-            const data = result.data();
-            if (data !== undefined)
-            {
-              orig[index] = toLineDataTableStruct(result.id, data);
-              setLineData(orig);
-            }
-          });
+  const RELOAD_THIS_LINE: Action<LineDataTableStruct> = {
+    icon: "refresh",
+    tooltip: "更新",
+    onClick: (_, data) => {
+      const d = Array.isArray(data) ? data[0] : data;
+
+      db.getLineDoc(d.line_id).then(result => {
+        const index = lineData.findIndex(v => v.line_id === d.line_id);
+        const orig = Array.from(lineData);
+        const data = result.data();
+        if (data !== undefined)
+        {
+          orig[index] = toLineDataTableStruct(result.id, data);
+          setLineData(orig);
         }
-      },
+      });
+    }
+  }
+
+  return (<MaterialTable
+    columns={COLUMNS}
+    actions={[
+      OPEN_THIS_LINE,
+      RELOAD_THIS_LINE,
     ]}
     data={lineData}
     title="路線一覧"

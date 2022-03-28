@@ -1,4 +1,4 @@
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column } from 'material-table';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DBCtrler } from '../firestore/DBCtrler';
@@ -11,6 +11,17 @@ interface TimetableDataTableStruct extends TTimetableDocument
   /** 時刻表ID */
   timetable_id: string,
 }
+
+const COLUMNS: Column<TimetableDataTableStruct>[] = [
+  { title: "進行方向", field: "direction" },
+  { title: "列車番号", field: "train_id" },
+  { title: "種別", field: "train_type" },
+  { title: "乗務開始駅", field: "dep_from_name" },
+  { title: "乗務開始時刻", field: "dep_from_time", type: "time" },
+  { title: "乗務終了駅", field: "work_to_name" },
+  { title: "乗務終了時刻", field: "work_to_time", type: "time" },
+  { title: "(内部ID)", field: "timetable_id" },
+];
 
 function toTimetableDataTableStruct(id: string, d: TTimetableDocument): TimetableDataTableStruct
 {
@@ -32,48 +43,43 @@ export const Timetables = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const OPEN_THIS_TRAIN: Action<TimetableDataTableStruct> = {
+    icon: "open_in_browser",
+    tooltip: "開く",
+    onClick: (_, data) => {
+      const d = Array.isArray(data) ? data[0] : data;
+      if (params["line-id"] !== undefined)
+        navigate(`${SHOW_TIMETABLE_PAGE_URL}${generateParams({ "line-id": params["line-id"], "timetable-id": d.timetable_id })}`);
+    }
+  };
+
+  const RELOAD_THIS_TRAIN: Action<TimetableDataTableStruct> = {
+    icon: "refresh",
+    tooltip: "更新",
+    onClick: (_, data) => {
+      const d = Array.isArray(data) ? data[0] : data;
+
+      if (params["line-id"] === undefined)
+        return;
+
+      db.getTimetableDoc(params["line-id"], d.timetable_id).then(result => {
+        const index = timetableData.findIndex(v => v.timetable_id === d.timetable_id);
+        const orig = Array.from(timetableData);
+        const data = result.data();
+        if (data !== undefined)
+        {
+          orig[index] = toTimetableDataTableStruct(result.id, data);
+          setTimetableData(orig);
+        }
+      });
+    }
+  };
+
   return (<MaterialTable
-    columns={[
-      { title: "進行方向", field: "direction" },
-      { title: "列車番号", field: "train_id" },
-      { title: "種別", field: "train_type" },
-      { title: "乗務開始駅", field: "dep_from_name" },
-      { title: "乗務開始時刻", field: "dep_from_time", type: "time" },
-      { title: "乗務終了駅", field: "work_to_name" },
-      { title: "乗務終了時刻", field: "work_to_time", type: "time" },
-      { title: "(内部ID)", field: "timetable_id" },
-    ]}
+    columns={COLUMNS}
     actions={[
-      {
-        icon: "open_in_browser",
-        tooltip: "開く",
-        onClick: (_, data) => {
-          const d = Array.isArray(data) ? data[0] : data;
-          if (params["line-id"] !== undefined)
-            navigate(`${SHOW_TIMETABLE_PAGE_URL}${generateParams({ "line-id": params["line-id"], "timetable-id": d.timetable_id })}`);
-        }
-      },
-      {
-        icon: "refresh",
-        tooltip: "更新",
-        onClick: (_, data) => {
-          const d = Array.isArray(data) ? data[0] : data;
-
-          if (params["line-id"] === undefined)
-            return;
-
-          db.getTimetableDoc(params["line-id"], d.timetable_id).then(result => {
-            const index = timetableData.findIndex(v => v.timetable_id === d.timetable_id);
-            const orig = Array.from(timetableData);
-            const data = result.data();
-            if (data !== undefined)
-            {
-              orig[index] = toTimetableDataTableStruct(result.id, data);
-              setTimetableData(orig);
-            }
-          });
-        }
-      },
+      OPEN_THIS_TRAIN,
+      RELOAD_THIS_TRAIN,
     ]}
     data={timetableData}
     title="時刻表一覧"
