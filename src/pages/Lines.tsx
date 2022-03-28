@@ -22,7 +22,7 @@ const COLUMNS: Column<LineDataTableStruct>[] = [
   { title: "読み取り制限", field: "can_read_str" },
   { title: "書き込み制限", field: "can_write_str" },
   { title: "タグ一覧", field: "tag_list_str" },
-  { title: "時間の加速設定", field: "time_multipl" },
+  { title: "時間の加速設定", field: "time_multipl", initialEditValue: 1, type: "numeric" },
   { title: "(内部ID)", field: "line_id", editable: "never" },
 ];
 
