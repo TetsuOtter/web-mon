@@ -75,6 +75,22 @@ export const Timetables = () => {
     }
   };
 
+  const getIsEditable = (data: TimetableDataTableStruct): boolean => {
+    return true;
+  };
+
+  const onRowAdd = (data: TimetableDataTableStruct): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+  const onRowDelete = (data: TimetableDataTableStruct): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+  const onRowUpdate = (data: TimetableDataTableStruct): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
   return (<MaterialTable
     columns={COLUMNS}
     actions={[
@@ -87,6 +103,14 @@ export const Timetables = () => {
       headerStyle: {
         whiteSpace: "nowrap"
       }
+    }}
+    editable={{
+      isEditable: getIsEditable,
+      isDeletable: getIsEditable,
+
+      onRowAdd: onRowAdd,
+      onRowDelete: onRowDelete,
+      onRowUpdate: onRowUpdate,
     }}
   >
 

@@ -77,6 +77,23 @@ export const Lines = () => {
     }
   }
 
+  const getIsEditable = (data: LineDataTableStruct): boolean => {
+    return true;
+  };
+
+  const onRowAdd = (data: LineDataTableStruct): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+  const onRowDelete = (data: LineDataTableStruct): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+  const onRowUpdate = (data: LineDataTableStruct): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+
   return (<MaterialTable
     columns={COLUMNS}
     actions={[
@@ -85,6 +102,14 @@ export const Lines = () => {
     ]}
     data={lineData}
     title="路線一覧"
+    editable={{
+      isEditable: getIsEditable,
+      isDeletable: getIsEditable,
+
+      onRowAdd: onRowAdd,
+      onRowDelete: onRowDelete,
+      onRowUpdate: onRowUpdate,
+    }}
   >
 
   </MaterialTable>);

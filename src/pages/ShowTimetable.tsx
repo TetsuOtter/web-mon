@@ -80,6 +80,22 @@ export const ShowTimetable = () => {
     }
   }
 
+  const getIsEditable = (data: StationDataWithID): boolean => {
+    return true;
+  };
+
+  const onRowAdd = (data: StationDataWithID): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+  const onRowDelete = (data: StationDataWithID): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
+  const onRowUpdate = (data: StationDataWithID): Promise<unknown> => {
+    return Promise.resolve();
+  };
+
   return (<MaterialTable
     columns={COLUMNS}
     actions={[
@@ -92,6 +108,14 @@ export const ShowTimetable = () => {
       headerStyle: {
         whiteSpace: "nowrap"
       }
+    }}
+    editable={{
+      isEditable: getIsEditable,
+      isDeletable: getIsEditable,
+
+      onRowAdd: onRowAdd,
+      onRowDelete: onRowDelete,
+      onRowUpdate: onRowUpdate,
     }}
   >
 
