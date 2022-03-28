@@ -1,0 +1,14 @@
+{
+    "editor.tabSize": 2,
+    "files.exclude": {
+        "**/node_modules/**": true
+    },
+    "files.insertFinalNewline": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.renderWhitespace": "all",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true
+}
