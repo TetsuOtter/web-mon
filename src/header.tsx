@@ -13,21 +13,9 @@ const APPBAR_STYLE: CSSProperties = {
 
 export const Header: FC = () =>
 {
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAuthVisible, setIsAuthVisible] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const changeWindowState = () => {
-    const _isFullscreen = !!document.fullscreenElement;
-
-    if (_isFullscreen)
-      document.exitFullscreen();
-    else
-      document.body.requestFullscreen();
-
-    setIsFullscreen(!_isFullscreen);
-  }
 
   const authButtonClicked = () => {
     if (isSignedIn)
@@ -56,11 +44,6 @@ export const Header: FC = () =>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           WebMON
         </Typography>
-
-        <Button
-          onClick={changeWindowState}
-          color="inherit"
-        >{isFullscreen ? "EXIT" : "Enter"} Fullscreen</Button>
 
         <Button
           color="inherit"

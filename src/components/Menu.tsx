@@ -1,4 +1,5 @@
-import { Box, List, SwipeableDrawer, Toolbar } from "@mui/material";
+import { Fullscreen, FullscreenExit } from "@mui/icons-material";
+import { Box, List, ListItemButton, ListItemIcon, SwipeableDrawer, Toolbar } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props
@@ -8,6 +9,20 @@ interface Props
 }
 
 export const Menu = (props: Props) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const changeWindowState = () => {
+    const _isFullscreen = !!document.fullscreenElement;
+
+    if (_isFullscreen)
+      document.exitFullscreen();
+    else
+      document.body.requestFullscreen();
+
+    setIsFullscreen(!_isFullscreen);
+  }
+
+
   return (
   <SwipeableDrawer
     anchor="left"
@@ -21,6 +36,15 @@ export const Menu = (props: Props) => {
     >
       <Toolbar />
       <List>
+        <ListItemButton
+          onClick={changeWindowState}
+          sx={{ position: "fixed", bottom: 10 }}
+        >
+          <ListItemIcon>
+            {isFullscreen ? <FullscreenExit/> : <Fullscreen/>}
+          </ListItemIcon>
+          {isFullscreen ? "EXIT" : "Enter"} Fullscreen
+        </ListItemButton>
       </List>
     </Box>
   </SwipeableDrawer>);
