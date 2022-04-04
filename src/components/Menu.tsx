@@ -1,5 +1,5 @@
 import { AccountCircle, Fullscreen, FullscreenExit, Preview } from "@mui/icons-material";
-import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
+import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
 import { User } from "firebase/auth";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -63,15 +63,18 @@ export const Menu = (props: Props) => {
           </ListItemButton>
         </ListItem>
 
-        <ListItemButton
-          onClick={changeWindowState}
-          sx={{ position: "fixed", bottom: 10 }}
-        >
-          <ListItemIcon>
-            {isFullscreen ? <FullscreenExit/> : <Fullscreen/>}
-          </ListItemIcon>
-          <ListItemText primary={(isFullscreen ? "EXIT" : "Enter") + "Fullscreen"} />
-        </ListItemButton>
+        <Divider />
+
+        <ListItem>
+          <ListItemButton
+            onClick={changeWindowState}
+          >
+            <ListItemIcon>
+              {isFullscreen ? <FullscreenExit/> : <Fullscreen/>}
+            </ListItemIcon>
+            <ListItemText primary={(isFullscreen ? "EXIT" : "Enter") + " Fullscreen"} />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   </SwipeableDrawer>);
