@@ -59,7 +59,7 @@ export const Menu = (props: Props) => {
             <ListItemIcon>
               <AccountCircle/>
             </ListItemIcon>
-            <ListItemText primary={props.userData?.displayName ?? props.userData?.email ?? props.userData?.uid ?? "SIGNED OUT"} />
+            <ListItemText primary="ユーザ情報" secondary={props.userData?.displayName ?? props.userData?.email ?? props.userData?.uid ?? "SIGNED OUT"} />
           </ListItem>
         </Collapse>
 
