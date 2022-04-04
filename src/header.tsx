@@ -1,30 +1,14 @@
-import { AppBar, Toolbar, Button, IconButton, makeStyles } from "@material-ui/core";
+import { AppBar, Toolbar, Button, IconButton } from "@mui/material";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import { FC, useState } from "react";
 
-const useStyle = makeStyles({
-  appBar: {
-    color: "white",
-    background: "black",
-  },
-  leftAlignButton: {
-    marginLeft: "4pt",
-    color: "inherit",
-    textTransform: "none",
-  },
-  rightAlignButton: {
-    marginRight: "4pt",
-    color: "inherit",
-    textTransform: "none",
-  },
-  flexGrow: {
-    flexGrow: 1
-  }
-});
+const APPBAR_STYLE: CSSProperties = {
+  color: "white",
+  background: "black",
+};
 
 export const Header: FC = () =>
 {
-  const classNames = useStyle();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const changeWindowState = () => {
@@ -39,21 +23,23 @@ export const Header: FC = () =>
   }
 
   return (
-    <AppBar position="static" color="inherit" className={classNames.appBar}>
+    <AppBar
+      position="static"
+      color="inherit"
+      style={APPBAR_STYLE}
+    >
       <Toolbar>
         <IconButton edge="start" color="inherit" aria-label="menu">
           <MenuIcon />
         </IconButton>
 
         <Button
-          className={classNames.leftAlignButton}
           onClick={changeWindowState}
+          color="inherit"
         >{isFullscreen ? "EXIT" : "Enter"} Fullscreen</Button>
 
-        <div className={classNames.flexGrow}></div>
-
         <Button
-          className={classNames.rightAlignButton}
+          color="inherit"
         >-&gt; WestMON</Button>
       </Toolbar>
     </AppBar>
