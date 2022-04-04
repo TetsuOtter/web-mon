@@ -11,6 +11,7 @@ import { Lines } from './pages/Lines';
 import { Timetables } from './pages/Timetables';
 import { WestMON } from './pages/WestMON';
 import { ShowTimetable } from './pages/ShowTimetable';
+import Header from './header';
 
 const store = createStore(reducer);
 
@@ -65,9 +66,14 @@ render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
+        <Header />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
         <Routes>
           <Route
