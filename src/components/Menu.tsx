@@ -1,6 +1,8 @@
-import { Fullscreen, FullscreenExit } from "@mui/icons-material";
-import { Box, List, ListItemButton, ListItemIcon, SwipeableDrawer, Toolbar } from "@mui/material";
+import { Fullscreen, FullscreenExit, Preview } from "@mui/icons-material";
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { WEST_MON_PAGE_ID } from "../index";
 
 interface Props
 {
@@ -10,6 +12,8 @@ interface Props
 
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const changeWindowState = () => {
     const _isFullscreen = !!document.fullscreenElement;
@@ -22,6 +26,9 @@ export const Menu = (props: Props) => {
     setIsFullscreen(!_isFullscreen);
   }
 
+  const showWestMON = () => {
+    navigate(`/${WEST_MON_PAGE_ID}${location.search}`);
+  };
 
   return (
   <SwipeableDrawer
@@ -36,6 +43,15 @@ export const Menu = (props: Props) => {
     >
       <Toolbar />
       <List>
+        <ListItem disablePadding>
+          <ListItemButton onClick={showWestMON}>
+            <ListItemIcon>
+              <Preview/>
+            </ListItemIcon>
+            <ListItemText primary={"West MON"} />
+          </ListItemButton>
+        </ListItem>
+
         <ListItemButton
           onClick={changeWindowState}
           sx={{ position: "fixed", bottom: 10 }}

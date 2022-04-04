@@ -45,9 +45,6 @@ export const Header: FC = () =>
           WebMON
         </Typography>
 
-        <Button
-          color="inherit"
-        >-&gt; WestMON</Button>
         <div>
           <Button
             onClick={authButtonClicked}
