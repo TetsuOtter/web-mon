@@ -55,7 +55,7 @@ export const Menu = (props: Props) => {
         </ListItem>
 
         <Collapse in={!!props.userData}>
-          <ListItem disablePadding>
+          <ListItem>
             <ListItemIcon>
               <AccountCircle/>
             </ListItemIcon>
