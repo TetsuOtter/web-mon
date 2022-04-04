@@ -1,9 +1,9 @@
-import { AccountCircle, Fullscreen, FullscreenExit, Preview } from "@mui/icons-material";
+import { AccountCircle, Fullscreen, FullscreenExit, Home, Place, Preview, Train, Work } from "@mui/icons-material";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
 import { User } from "firebase/auth";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { WEST_MON_PAGE_ID } from "../index";
+import { WEST_MON_PAGE_ID, LINE_PAGE_URL, TIMETABLE_SELECT_PAGE_URL, SHOW_TIMETABLE_PAGE_URL } from "../index";
 
 interface Props
 {
@@ -45,6 +45,15 @@ export const Menu = (props: Props) => {
     >
       <Toolbar />
       <List>
+        <ListItem>
+          <ListItemButton onClick={() => navigate("/" + location.search)}>
+            <ListItemIcon>
+              <Home />
+            </ListItemIcon>
+            <ListItemText primary="HOME" />
+          </ListItemButton>
+        </ListItem>
+
         <Collapse in={!!props.userData}>
           <ListItem disablePadding>
             <ListItemIcon>
@@ -53,6 +62,37 @@ export const Menu = (props: Props) => {
             <ListItemText primary={props.userData?.displayName ?? props.userData?.email ?? props.userData?.uid ?? "SIGNED OUT"} />
           </ListItem>
         </Collapse>
+
+        <Divider />
+
+        <ListItem>
+          <ListItemButton onClick={() => navigate(LINE_PAGE_URL + location.search)}>
+            <ListItemIcon>
+              <Train />
+            </ListItemIcon>
+            <ListItemText primary="路線" secondary={"LINE_NAME"} />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem>
+          <ListItemButton onClick={() => navigate(TIMETABLE_SELECT_PAGE_URL + location.search)}>
+            <ListItemIcon>
+              <Work />
+            </ListItemIcon>
+            <ListItemText primary="列車" secondary={"TRAIN_NUMBER"} />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem>
+          <ListItemButton onClick={() => navigate(SHOW_TIMETABLE_PAGE_URL + location.search)}>
+            <ListItemIcon>
+              <Place />
+            </ListItemIcon>
+            <ListItemText primary="現在駅" secondary={"CURRENT_STATION"}/>
+          </ListItemButton>
+        </ListItem>
+
+        <Divider />
 
         <ListItem>
           <ListItemButton onClick={showWestMON}>
