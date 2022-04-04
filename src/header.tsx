@@ -2,7 +2,7 @@ import { AppBar, Dialog, Toolbar, Button, IconButton, Typography } from "@mui/ma
 import { Menu as MenuIcon } from "@material-ui/icons";
 import { FC, useEffect, useState, CSSProperties } from "react";
 import Auth from "./components/Auth";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut, onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
 
@@ -16,6 +16,7 @@ export const Header: FC = () =>
   const [isAuthVisible, setIsAuthVisible] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const authButtonClicked = () => {
     if (isSignedIn)
@@ -25,7 +26,10 @@ export const Header: FC = () =>
   };
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => setIsSignedIn(!!user));
+    onAuthStateChanged(auth, (user) => {
+      setIsSignedIn(!!user);
+      setUser(user);
+    });
   });
 
   return (
@@ -35,7 +39,11 @@ export const Header: FC = () =>
       color="inherit"
       style={APPBAR_STYLE}
     >
-      <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <Menu
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+        userData={user}
+      />
       <Toolbar>
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <MenuIcon />

@@ -1,5 +1,6 @@
-import { Fullscreen, FullscreenExit, Preview } from "@mui/icons-material";
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
+import { AccountCircle, Fullscreen, FullscreenExit, Preview } from "@mui/icons-material";
+import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
+import { User } from "firebase/auth";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { WEST_MON_PAGE_ID } from "../index";
@@ -7,7 +8,8 @@ import { WEST_MON_PAGE_ID } from "../index";
 interface Props
 {
   isMenuOpen: boolean,
-  setIsMenuOpen: Dispatch<SetStateAction<boolean>>
+  setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
+  userData?: User | null,
 }
 
 export const Menu = (props: Props) => {
@@ -38,11 +40,20 @@ export const Menu = (props: Props) => {
     onClose={() => props.setIsMenuOpen(false)}
   >
     <Box
-      sx={{ width: 250 }}
+      sx={{ minWidth: 270 }}
       role="presentation"
     >
       <Toolbar />
       <List>
+        <Collapse in={!!props.userData}>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <AccountCircle/>
+            </ListItemIcon>
+            <ListItemText primary={props.userData?.displayName ?? props.userData?.email ?? props.userData?.uid ?? "SIGNED OUT"} />
+          </ListItem>
+        </Collapse>
+
         <ListItem disablePadding>
           <ListItemButton onClick={showWestMON}>
             <ListItemIcon>
