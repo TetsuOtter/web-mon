@@ -4,6 +4,7 @@ import { FC, useEffect, useState, CSSProperties } from "react";
 import Auth from "./components/Auth";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
+import Menu from "./components/Menu";
 
 const APPBAR_STYLE: CSSProperties = {
   color: "white",
@@ -15,6 +16,7 @@ export const Header: FC = () =>
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAuthVisible, setIsAuthVisible] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const changeWindowState = () => {
     const _isFullscreen = !!document.fullscreenElement;
@@ -40,12 +42,14 @@ export const Header: FC = () =>
 
   return (
     <AppBar
-      position="static"
+      position="fixed"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       color="inherit"
       style={APPBAR_STYLE}
     >
+      <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu">
+        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <MenuIcon />
         </IconButton>
 
