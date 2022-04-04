@@ -43,7 +43,7 @@ export const Menu = (props: Props) => {
           <ListItemIcon>
             {isFullscreen ? <FullscreenExit/> : <Fullscreen/>}
           </ListItemIcon>
-          {isFullscreen ? "EXIT" : "Enter"} Fullscreen
+          <ListItemText primary={(isFullscreen ? "EXIT" : "Enter") + "Fullscreen"} />
         </ListItemButton>
       </List>
     </Box>
