@@ -54,7 +54,7 @@ export const Menu = (props: Props) => {
           </ListItem>
         </Collapse>
 
-        <ListItem disablePadding>
+        <ListItem>
           <ListItemButton onClick={showWestMON}>
             <ListItemIcon>
               <Preview/>
