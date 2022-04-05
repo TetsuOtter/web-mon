@@ -1,3 +1,4 @@
+import { User } from "firebase/auth";
 import { combineReducers, Reducer } from "redux";
 import { TLineDocument, TStationDocument, TTimetableDocument } from "../firestore/DBCtrler.types";
 import { ActionWithPayload } from "./reducer";
@@ -6,6 +7,7 @@ import { intiialState, State } from "./state.type"
 const TYPE_SET_LINE = "SET_LINE";
 const TYPE_SET_TRAIN = "SET_TRAIN";
 const TYPE_SET_STATIONS = "SET_STATIONS";
+const TYPE_SET_USER = "SET_USER";
 
 export interface SetLinePayload {
   id: string,
@@ -76,8 +78,19 @@ const setStationsAction: Reducer<State, ActionWithPayload<SetStationsPayload>> =
     return state;
 }
 
+const setCurrentUser: Reducer<State, ActionWithPayload<User | null>> = (state = intiialState, action) => {
+  if (action.type === TYPE_SET_USER)
+    return {
+      ...state,
+      currentUser: action.payload,
+    };
+  else
+    return state;
+}
+
 export const dataManager = combineReducers({
   setLineAction,
   setTrainAction,
   setStationsAction,
+  setCurrentUser,
 });
