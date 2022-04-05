@@ -2,21 +2,22 @@ import { AppBar, Dialog, Toolbar, Button, IconButton, Typography } from "@mui/ma
 import { Menu as MenuIcon } from "@material-ui/icons";
 import { FC, useEffect, useState, CSSProperties } from "react";
 import Auth from "./components/Auth";
-import { signOut, onAuthStateChanged, User } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
+import { useDispatch } from "react-redux";
+import { setCurrentUserAction } from "./redux/dataManager";
 
 const APPBAR_STYLE: CSSProperties = {
   color: "white",
   background: "black",
 };
 
-export const Header: FC = () =>
-{
+export const Header: FC = () => {
   const [isAuthVisible, setIsAuthVisible] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(!!auth.currentUser);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const dispatch = useDispatch();
 
   const authButtonClicked = () => {
     if (isSignedIn)
@@ -26,11 +27,11 @@ export const Header: FC = () =>
   };
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      setIsSignedIn(!!user);
-      setUser(user);
+    onAuthStateChanged(auth, (_user) => {
+      setIsSignedIn(!!_user);
+      dispatch(setCurrentUserAction(_user));
     });
-  });
+  }, [dispatch]);
 
   return (
     <AppBar
@@ -42,7 +43,6 @@ export const Header: FC = () =>
       <Menu
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
-        userData={user}
       />
       <Toolbar>
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -64,7 +64,7 @@ export const Header: FC = () =>
       <Dialog
         open={isAuthVisible}
         onClose={() => setIsAuthVisible(false)}>
-        <Auth doClose={() => setIsAuthVisible(false)}/>
+        <Auth doClose={() => setIsAuthVisible(false)} />
       </Dialog>
     </AppBar>
   )
