@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { combineReducers, Reducer } from "redux";
+import { Reducer } from "redux";
 import { TLineDocument, TStationDocument, TTimetableDocument } from "../firestore/DBCtrler.types";
 import { ActionWithPayload } from "./reducer";
 import { intiialState, State } from "./state.type"
@@ -47,7 +47,7 @@ export const setCurrentUserAction = (user: User | null): ActionWithPayload<User 
   payload: user
 });
 
-const setLineAction: Reducer<State, ActionWithPayload<SetLinePayload>> = (state = intiialState, action) => {
+export const setLineReducer: Reducer<State, ActionWithPayload<SetLinePayload>> = (state = intiialState, action) => {
   if (action.type === TYPE_SET_LINE)
     return {
       ...state,
@@ -61,7 +61,7 @@ const setLineAction: Reducer<State, ActionWithPayload<SetLinePayload>> = (state 
     return state;
 }
 
-const setTrainAction: Reducer<State, ActionWithPayload<SetTrainPayload>> = (state = intiialState, action) => {
+export const setTrainReducer: Reducer<State, ActionWithPayload<SetTrainPayload>> = (state = intiialState, action) => {
   if (action.type === TYPE_SET_TRAIN)
     return {
       ...state,
@@ -73,7 +73,7 @@ const setTrainAction: Reducer<State, ActionWithPayload<SetTrainPayload>> = (stat
     return state;
 }
 
-const setStationsAction: Reducer<State, ActionWithPayload<SetStationsPayload>> = (state = intiialState, action) => {
+export const setStationsReducer: Reducer<State, ActionWithPayload<SetStationsPayload>> = (state = intiialState, action) => {
   if (action.type === TYPE_SET_STATIONS)
     return {
       ...state,
@@ -83,7 +83,7 @@ const setStationsAction: Reducer<State, ActionWithPayload<SetStationsPayload>> =
     return state;
 }
 
-const setCurrentUser: Reducer<State, ActionWithPayload<User | null>> = (state = intiialState, action) => {
+export const setCurrentUserReducer: Reducer<State, ActionWithPayload<User | null>> = (state = intiialState, action) => {
   if (action.type === TYPE_SET_USER)
     return {
       ...state,
@@ -92,10 +92,3 @@ const setCurrentUser: Reducer<State, ActionWithPayload<User | null>> = (state = 
   else
     return state;
 }
-
-export const dataManager = combineReducers({
-  setLineAction,
-  setTrainAction,
-  setStationsAction,
-  setCurrentUser,
-});

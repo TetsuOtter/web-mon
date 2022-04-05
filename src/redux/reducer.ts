@@ -1,5 +1,6 @@
 import { AnyAction, combineReducers } from "redux";
-import { dataManager } from "./dataManager";
+import { setLineReducer, setTrainReducer, setStationsReducer, setCurrentUserReducer } from "./dataManager";
+import { State as _State } from "./state.type";
 
 export interface ActionWithPayload<TPayload> extends AnyAction {
   type: string,
@@ -7,5 +8,15 @@ export interface ActionWithPayload<TPayload> extends AnyAction {
 }
 
 export const reducer = combineReducers({
-  dataManager,
+  setLineReducer,
+  setTrainReducer,
+  setStationsReducer,
+  setCurrentUserReducer,
 });
+
+export interface State {
+  setLineReducer: _State,
+  setTrainReducer: _State,
+  setStationsReducer: _State,
+  setCurrentUserReducer: _State,
+};
