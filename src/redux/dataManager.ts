@@ -42,6 +42,11 @@ export const setStations = (map: SetStationsPayload): ActionWithPayload<SetStati
   payload: map
 });
 
+export const setCurrentUserAction = (user: User | null): ActionWithPayload<User | null> => ({
+  type: TYPE_SET_USER,
+  payload: user
+});
+
 const setLineAction: Reducer<State, ActionWithPayload<SetLinePayload>> = (state = intiialState, action) => {
   if (action.type === TYPE_SET_LINE)
     return {
