@@ -1,6 +1,7 @@
 import { combineReducers, Reducer } from "redux";
 import { TLineDocument, TStationDocument, TTimetableDocument } from "../firestore/DBCtrler.types";
-import { ActionWithPayload, intiialState, State } from "./reducer";
+import { ActionWithPayload } from "./reducer";
+import { intiialState, State } from "./state.type"
 
 const TYPE_SET_LINE = "SET_LINE";
 const TYPE_SET_TRAIN = "SET_TRAIN";
