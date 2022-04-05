@@ -34,7 +34,7 @@ export const Header: FC = () =>
 
   return (
     <AppBar
-      position="fixed"
+      position="sticky"
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       color="inherit"
       style={APPBAR_STYLE}
