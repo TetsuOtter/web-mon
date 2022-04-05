@@ -41,7 +41,7 @@ export const setStations = (map: SetStationsPayload): ActionWithPayload<SetStati
 });
 
 const setLineAction: Reducer<State, ActionWithPayload<SetLinePayload>> = (state = intiialState, action) => {
-  if (action.type == TYPE_SET_LINE)
+  if (action.type === TYPE_SET_LINE)
     return {
       ...state,
       lineDataId: action.payload.id,
@@ -55,7 +55,7 @@ const setLineAction: Reducer<State, ActionWithPayload<SetLinePayload>> = (state 
 }
 
 const setTrainAction: Reducer<State, ActionWithPayload<SetTrainPayload>> = (state = intiialState, action) => {
-  if (action.type == TYPE_SET_TRAIN)
+  if (action.type === TYPE_SET_TRAIN)
     return {
       ...state,
       trainDataId: action.payload.id,
@@ -67,7 +67,7 @@ const setTrainAction: Reducer<State, ActionWithPayload<SetTrainPayload>> = (stat
 }
 
 const setStationsAction: Reducer<State, ActionWithPayload<SetStationsPayload>> = (state = intiialState, action) => {
-  if (action.type == TYPE_SET_STATIONS)
+  if (action.type === TYPE_SET_STATIONS)
     return {
       ...state,
       stations: action.payload,
