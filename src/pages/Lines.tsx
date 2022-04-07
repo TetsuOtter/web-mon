@@ -123,7 +123,17 @@ export const Lines = () => {
   */
 
   const onRowUpdate = (data: LineDataTableStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (db === undefined)
+      return Promise.reject("サインインして下さい");
+    return db.updateLineData(data.line_id, {
+      disp_name: data.disp_name,
+      time_multipl: data.time_multipl
+    }).then(() => {
+      const after = Array.from(lineData);
+      const index = after.findIndex(v => v.line_id === data.line_id);
+      after[index] = data;
+      setLineData(after);
+    });
   };
 
   return (<Fragment>
