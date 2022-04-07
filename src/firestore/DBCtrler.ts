@@ -17,8 +17,8 @@ export class DBCtrler {
     this.loadFromServerAnyway = loadFromServerAnyway ?? false;
   }
 
-  private getDocFromCacheOrServer<T>(docRef: DocumentReference<T>): Promise<DocumentSnapshot<T>> {
-    if (this.loadFromServerAnyway)
+  private getDocFromCacheOrServer<T>(docRef: DocumentReference<T>, loadFromServerAnyway = false): Promise<DocumentSnapshot<T>> {
+    if (this.loadFromServerAnyway || loadFromServerAnyway)
       return getDocFromServer(docRef);
 
     return getDocFromCache(docRef)
