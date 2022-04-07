@@ -77,12 +77,12 @@ export class DBCtrler {
     return this.getDocsFromCacheOrServer(query(this._LineCollectionRef(), where("can_read", "array-contains-any", user_id_arr)), loadFromServerAnyway);
   }
 
-  public getTimetableDoc(line_id: string, timetable_id: string): Promise<DocumentSnapshot<TTimetableDocument>> {
-    return this.getDocFromCacheOrServer(this._TimetableDocRef(line_id, timetable_id));
+  public getTimetableDoc(line_id: string, timetable_id: string, loadFromServerAnyway: boolean = false): Promise<DocumentSnapshot<TTimetableDocument>> {
+    return this.getDocFromCacheOrServer(this._TimetableDocRef(line_id, timetable_id), loadFromServerAnyway);
   }
 
-  public getAllTimetableDocs(line_id: string): Promise<QuerySnapshot<TTimetableDocument>> {
-    return this.getDocsFromCacheOrServer(this._TimetableCollectionRef(line_id));
+  public getAllTimetableDocs(line_id: string, loadFromServerAnyway: boolean = false): Promise<QuerySnapshot<TTimetableDocument>> {
+    return this.getDocsFromCacheOrServer(this._TimetableCollectionRef(line_id), loadFromServerAnyway);
   }
   public getTimetableDocs_Query(line_id: string, ...queryArr: QueryConstraint[]): Promise<QuerySnapshot<TTimetableDocument>> {
     return this.getDocsFromCacheOrServer(query(this._TimetableCollectionRef(line_id), ...queryArr));
