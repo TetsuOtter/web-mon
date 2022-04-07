@@ -124,26 +124,28 @@ export const Lines = () => {
     return Promise.resolve();
   };
 
-  return (<MaterialTable
-    columns={COLUMNS}
-    actions={[
-      OPEN_THIS_LINE,
-      RELOAD_THIS_LINE,
-    ]}
-    data={lineData}
-    title="路線一覧"
-    editable={{
-      isEditable: getIsEditable,
-      isDeletable: getIsEditable,
+  return (<Fragment>
+    <MaterialTable
+      columns={COLUMNS}
+      actions={[
+        OPEN_THIS_LINE,
+        RELOAD_THIS_LINE,
+      ]}
+      data={lineData}
+      title="路線一覧"
+      editable={{
+        isEditable: getIsEditable,
+        isDeletable: getIsEditable,
 
-      onRowAdd: uid ? onRowAdd : undefined,
-      onRowDelete: uid ? onRowDelete : undefined,
-      onRowUpdate: uid ? onRowUpdate : undefined,
-    }}
-    options={{
-      headerStyle: { whiteSpace: "nowrap" },
-    }}
-  >
+        onRowAdd: uid ? onRowAdd : undefined,
+        onRowDelete: uid ? onRowDelete : undefined,
+        onRowUpdate: uid ? onRowUpdate : undefined,
+      }}
+      options={{
+        headerStyle: { whiteSpace: "nowrap" },
+      }}
+    >
 
-  </MaterialTable>);
+    </MaterialTable>
+  </Fragment>);
 }
