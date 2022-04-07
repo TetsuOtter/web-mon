@@ -126,6 +126,9 @@ export const Lines = () => {
       onRowDelete: uid ? onRowDelete : undefined,
       onRowUpdate: uid ? onRowUpdate : undefined,
     }}
+    options={{
+      headerStyle: { whiteSpace: "nowrap" },
+    }}
   >
 
   </MaterialTable>);
