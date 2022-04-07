@@ -8,35 +8,52 @@ import { firestore } from '../firestore/firebaseApp';
 import { State } from '../redux/reducer';
 import { useSelector } from 'react-redux';
 
-interface LineDataTableStruct
-{
+interface LineDataTableStruct extends TLineDocument {
   line_id: string,
-  disp_name: string,
-  can_read_str: string,
-  can_write_str: string,
-  tag_list: string[],
-  tag_list_str: string,
-  time_multipl: number,
 }
 
 const COLUMNS: Column<LineDataTableStruct>[] = [
-  { title: "表示名", field: "disp_name" },
-  { title: "読み取り制限", field: "can_read_str" },
-  { title: "書き込み制限", field: "can_write_str" },
-  { title: "タグ一覧", field: "tag_list_str" },
-  { title: "時間の加速設定", field: "time_multipl", initialEditValue: 1, type: "numeric" },
-  { title: "(内部ID)", field: "line_id", editable: "never" },
+  {
+    title: "表示名",
+    field: "disp_name"
+  },
+  {
+    title: "READ",
+    editable: "never",
+    render: rowData => (<p>{rowData.can_read.findIndex(v => v === "") >= 0 ? "In Public" : "Private"}</p>)
+  },
+  {
+    title: "WRITE",
+    editable: "never",
+    render: rowData => (<p>{rowData.can_write.findIndex(v => v === "") >= 0 ? "In Public" : "Private"}</p>)
+  },
+  {
+    title: "タグ一覧",
+    editable: "never",
+    render: () => (<p>(準備中)</p>)
+  },
+  {
+    title: "時間の加速設定",
+    field: "time_multipl",
+    initialEditValue: 1,
+    type: "numeric"
+  },
+  {
+    title: "招待設定",
+    editable: "never",
+    render: () => (<p>(準備中)</p>)
+  },
+  {
+    title: "(内部ID)",
+    field: "line_id",
+    editable: "never"
+  },
 ];
 
 function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct {
   return {
+    ...d,
     line_id: id,
-    disp_name: d.disp_name,
-    can_read_str: d.can_read.findIndex(v => v === "") >= 0 ? "公開状態" : "非公開",
-    can_write_str: d.can_write.findIndex(v => v === "") >= 0 ? "公開状態" : "非公開",
-    tag_list: d.tag_list,
-    tag_list_str: d.tag_list.join(","),
-    time_multipl: d.time_multipl
   };
 }
 
