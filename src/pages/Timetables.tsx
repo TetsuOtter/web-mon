@@ -6,8 +6,7 @@ import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useSelector } from 'react-redux';
 
-interface TimetableDataTableStruct extends TTimetableDocument
-{
+interface TimetableDataTableStruct extends TTimetableDocument {
   /** 時刻表ID */
   timetable_id: string,
 }
@@ -42,8 +41,7 @@ const COLUMNS: Column<TimetableDataTableStruct>[] = [
   { title: "(内部ID)", field: "timetable_id", editable: "never" },
 ];
 
-function toTimetableDataTableStruct(id: string, d: TTimetableDocument): TimetableDataTableStruct
-{
+function toTimetableDataTableStruct(id: string, d: TTimetableDocument): TimetableDataTableStruct {
   return {
     ...d,
     timetable_id: id
@@ -99,8 +97,7 @@ export const Timetables = () => {
         const index = timetableData.findIndex(v => v.timetable_id === d.timetable_id);
         const orig = Array.from(timetableData);
         const data = result.data();
-        if (data !== undefined)
-        {
+        if (data !== undefined) {
           orig[index] = toTimetableDataTableStruct(result.id, data);
           setTimetableData(orig);
         }
