@@ -116,9 +116,11 @@ export const Lines = () => {
       });
   };
 
+  /* TODO: 路線の削除はサーバーサイドで実行するため、その処理を実装し次第こちらにも実装する
   const onRowDelete = (data: LineDataTableStruct): Promise<unknown> => {
     return Promise.resolve();
   };
+  */
 
   const onRowUpdate = (data: LineDataTableStruct): Promise<unknown> => {
     return Promise.resolve();
@@ -138,7 +140,7 @@ export const Lines = () => {
         isDeletable: getIsEditable,
 
         onRowAdd: uid ? onRowAdd : undefined,
-        onRowDelete: uid ? onRowDelete : undefined,
+        // onRowDelete: uid ? onRowDelete : undefined,
         onRowUpdate: uid ? onRowUpdate : undefined,
       }}
       options={{
