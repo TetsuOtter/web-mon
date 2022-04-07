@@ -26,8 +26,7 @@ const COLUMNS: Column<LineDataTableStruct>[] = [
   { title: "(内部ID)", field: "line_id", editable: "never" },
 ];
 
-function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct
-{
+function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct {
   return {
     line_id: id,
     disp_name: d.disp_name,
@@ -60,7 +59,7 @@ export const Lines = () => {
     tooltip: "開く",
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
-      navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({"line-id": d.line_id})}`);
+      navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({ "line-id": d.line_id })}`);
     }
   };
 
@@ -74,8 +73,7 @@ export const Lines = () => {
         const index = lineData.findIndex(v => v.line_id === d.line_id);
         const orig = Array.from(lineData);
         const data = result.data();
-        if (data !== undefined)
-        {
+        if (data !== undefined) {
           orig[index] = toLineDataTableStruct(result.id, data);
           setLineData(orig);
         }
@@ -108,7 +106,6 @@ export const Lines = () => {
   const onRowUpdate = (data: LineDataTableStruct): Promise<unknown> => {
     return Promise.resolve();
   };
-
 
   return (<MaterialTable
     columns={COLUMNS}
