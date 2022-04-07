@@ -1,10 +1,10 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { DBCtrler } from '../firestore/DBCtrler';
 import { TTimetableDocument } from '../firestore/DBCtrler.types';
-import { firestore } from '../firestore/firebaseApp';
 import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
+import { State } from '../redux/reducer';
+import { useSelector } from 'react-redux';
 
 interface TimetableDataTableStruct extends TTimetableDocument
 {
@@ -31,17 +31,31 @@ function toTimetableDataTableStruct(id: string, d: TTimetableDocument): Timetabl
   };
 }
 
+const reduxSelector = (state: State) => {
+  return {
+    db: state.setCurrentUserReducer.dbCtrler,
+    uid: state.setCurrentUserReducer.currentUser?.uid,
+  };
+};
+
 export const Timetables = () => {
   const [timetableData, setTimetableData] = useState<TimetableDataTableStruct[]>([]);
   const navigate = useNavigate();
   const params = getIDParams(useLocation());
-  const db = new DBCtrler(firestore, true);
+  const { db, uid } = useSelector(reduxSelector);
 
   useEffect(() => {
-    if (params["line-id"] !== undefined)
-      db.getAllTimetableDocs(params["line-id"]).then(result => setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data()))));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (params["line-id"] === undefined || db === undefined)
+      return;
+    const line_id = params["line-id"];
+    db.getAllTimetableDocs(line_id)
+      .then(async (result) => {
+        if (result.empty)
+          result = await db.getAllTimetableDocs(line_id, true);
+
+        setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data())));
+      });
+  }, [db]);
 
   const OPEN_THIS_TRAIN: Action<TimetableDataTableStruct> = {
     icon: "open_in_browser",
@@ -59,10 +73,10 @@ export const Timetables = () => {
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
 
-      if (params["line-id"] === undefined)
+      if (params["line-id"] === undefined || db === undefined)
         return;
 
-      db.getTimetableDoc(params["line-id"], d.timetable_id).then(result => {
+      db.getTimetableDoc(params["line-id"], d.timetable_id, true).then(result => {
         const index = timetableData.findIndex(v => v.timetable_id === d.timetable_id);
         const orig = Array.from(timetableData);
         const data = result.data();
@@ -76,16 +90,18 @@ export const Timetables = () => {
   };
 
   const getIsEditable = (data: TimetableDataTableStruct): boolean => {
-    return true;
+    return !!uid;
   };
 
   const onRowAdd = (data: TimetableDataTableStruct): Promise<unknown> => {
     return Promise.resolve();
   };
 
+  /* TODO: 列車の削除はサーバーサイドで行う処理であるため、そちらを実装し次第こちらにも実装する
   const onRowDelete = (data: TimetableDataTableStruct): Promise<unknown> => {
     return Promise.resolve();
   };
+  */
 
   const onRowUpdate = (data: TimetableDataTableStruct): Promise<unknown> => {
     return Promise.resolve();
@@ -108,9 +124,9 @@ export const Timetables = () => {
       isEditable: getIsEditable,
       isDeletable: getIsEditable,
 
-      onRowAdd: onRowAdd,
-      onRowDelete: onRowDelete,
-      onRowUpdate: onRowUpdate,
+      onRowAdd: uid ? onRowAdd : undefined,
+      // onRowDelete: onRowDelete,
+      onRowUpdate: uid ? onRowUpdate : undefined,
     }}
   >
 
