@@ -39,15 +39,21 @@ function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruc
   };
 }
 
+const reduxSelector = (state: State) => {
+  return {
+    db: state.setCurrentUserReducer.dbCtrler,
+    uid: state.setCurrentUserReducer.currentUser?.uid,
+  };
+};
+
 export const Lines = () => {
   const [lineData, setLineData] = useState<LineDataTableStruct[]>([]);
   const navigate = useNavigate();
-  const db = new DBCtrler(firestore, true);
+  const { db, uid } = useSelector(reduxSelector);
 
   useEffect(() => {
-    db.getLineDocs().then(result => setLineData(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    db?.getLineDocs(undefined, true).then(result => setLineData(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
+  }, [db]);
 
   const OPEN_THIS_LINE: Action<LineDataTableStruct> = {
     icon: "open_in_browser",
@@ -64,7 +70,7 @@ export const Lines = () => {
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
 
-      db.getLineDoc(d.line_id).then(result => {
+      db?.getLineDoc(d.line_id).then(result => {
         const index = lineData.findIndex(v => v.line_id === d.line_id);
         const orig = Array.from(lineData);
         const data = result.data();
@@ -77,12 +83,22 @@ export const Lines = () => {
     }
   }
 
-  const getIsEditable = (data: LineDataTableStruct): boolean => {
-    return true;
+  const getIsEditable = (data?: LineDataTableStruct): boolean => {
+    return !!uid;
   };
 
   const onRowAdd = (data: LineDataTableStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (uid === undefined || db === undefined)
+      return Promise.reject("サインインして下さい");
+    return db.createNewLineData(uid, data.disp_name)
+      .then(async (v) => {
+        await db.updateTimeMultipl(v.id, data.time_multipl);
+
+        const result = (await db.getLineDoc(v.id)).data();
+        if (result !== undefined)
+          lineData.push(toLineDataTableStruct(v.id, result));
+        return;
+      });
   };
 
   const onRowDelete = (data: LineDataTableStruct): Promise<unknown> => {
@@ -106,9 +122,9 @@ export const Lines = () => {
       isEditable: getIsEditable,
       isDeletable: getIsEditable,
 
-      onRowAdd: onRowAdd,
-      onRowDelete: onRowDelete,
-      onRowUpdate: onRowUpdate,
+      onRowAdd: uid ? onRowAdd : undefined,
+      onRowDelete: uid ? onRowDelete : undefined,
+      onRowUpdate: uid ? onRowUpdate : undefined,
     }}
   >
 
