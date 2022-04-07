@@ -2,9 +2,7 @@ import MaterialTable, { Action, Column } from 'material-table';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
-import { DBCtrler } from '../firestore/DBCtrler';
 import { TLineDocument } from '../firestore/DBCtrler.types';
-import { firestore } from '../firestore/firebaseApp';
 import { State } from '../redux/reducer';
 import { useSelector } from 'react-redux';
 
