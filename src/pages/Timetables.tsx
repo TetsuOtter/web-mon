@@ -13,13 +13,32 @@ interface TimetableDataTableStruct extends TTimetableDocument
 }
 
 const COLUMNS: Column<TimetableDataTableStruct>[] = [
-  { title: "進行方向", field: "direction" },
-  { title: "列車番号", field: "train_id" },
+  {
+    title: "進行方向",
+    field: "direction",
+    lookup: {
+      "Inbound": "Inbound",
+      "Outbound": "Outbound"
+    }
+  },
+  { title: "列番", field: "train_id" },
+  { title: "P列番", field: "sec_sys_train_id" },
+  { title: "無線番号", field: "radio_ch" },
+  { title: "線の色", field: "line_color" },
   { title: "種別", field: "train_type" },
   { title: "乗務開始駅", field: "dep_from_name" },
   { title: "乗務開始時刻", field: "dep_from_time", type: "time" },
+  { title: "乗務開始番線", field: "dep_from_track_num" },
   { title: "乗務終了駅", field: "work_to_name" },
   { title: "乗務終了時刻", field: "work_to_time", type: "time" },
+  { title: "乗務終了番線", field: "work_to_track_num" },
+  { title: "列車終着駅", field: "work_to_name" },
+  { title: "列車終着時刻", field: "last_stop_time", type: "time" },
+  { title: "列車終着番線", field: "last_stop_track_num" },
+  { title: "乗務員区所", field: "office_name" },
+  { title: "行路番号", field: "work_number" },
+  { title: "ダイヤ発効日", field: "effected_date", type: "date" },
+  { title: "付帯情報", field: "additional_info", type: "string" },
   { title: "(内部ID)", field: "timetable_id", editable: "never" },
 ];
 
