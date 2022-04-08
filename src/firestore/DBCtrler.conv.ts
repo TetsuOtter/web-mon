@@ -1,15 +1,13 @@
 import { FirestoreDataConverter, Timestamp } from "firebase/firestore";
 import { TFirestoreDictionary, TLineDocument, TServerSideLineDocument, TServerSideStationDocument, TServerSideTimetableDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
 
-function toMap(dic: TFirestoreDictionary<Timestamp>): Map<string, Date>
-{
+function toMap(dic: TFirestoreDictionary<Timestamp>): Map<string, Date> {
   return new Map<string, Date>(
     Object.entries(dic).map(value => [value[0], value[1].toDate()])
   );
 }
 
-function toDic(map: any): TFirestoreDictionary<Timestamp> | undefined
-{
+function toDic(map: any): TFirestoreDictionary<Timestamp> | undefined {
   if (map instanceof Map) {
     const dst = new Map<string, Timestamp>();
     map.forEach((v, k) => {
