@@ -72,7 +72,7 @@ export const Timetables = () => {
 
         setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data())));
       });
-  }, [db]);
+  }, [db, params]);
 
   const OPEN_THIS_TRAIN: Action<TimetableDataTableStruct> = {
     icon: "open_in_browser",
