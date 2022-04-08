@@ -1,5 +1,5 @@
 import { AppBar, Dialog, Toolbar, Button, IconButton, Typography } from "@mui/material";
-import { Menu as MenuIcon } from "@material-ui/icons";
+import { Menu as MenuIcon } from "@mui/icons-material";
 import { FC, useEffect, useState, CSSProperties } from "react";
 import Auth from "./components/Auth";
 import { signOut, onAuthStateChanged } from "firebase/auth";
