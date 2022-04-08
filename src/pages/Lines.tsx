@@ -1,5 +1,5 @@
 import MaterialTable, { Action, Column } from 'material-table';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
 import { TLineDocument } from '../firestore/DBCtrler.types';
@@ -136,28 +136,25 @@ export const Lines = () => {
     });
   };
 
-  return (<Fragment>
-    <MaterialTable
-      columns={COLUMNS}
-      actions={[
-        OPEN_THIS_LINE,
-        RELOAD_THIS_LINE,
-      ]}
-      data={lineData}
-      title="路線一覧"
-      editable={{
-        isEditable: getIsEditable,
-        isDeletable: getIsEditable,
+  return (<MaterialTable
+    columns={COLUMNS}
+    actions={[
+      OPEN_THIS_LINE,
+      RELOAD_THIS_LINE,
+    ]}
+    data={lineData}
+    title="路線一覧"
+    editable={{
+      isEditable: getIsEditable,
+      isDeletable: getIsEditable,
 
-        onRowAdd: uid ? onRowAdd : undefined,
-        // onRowDelete: uid ? onRowDelete : undefined,
-        onRowUpdate: uid ? onRowUpdate : undefined,
-      }}
-      options={{
-        headerStyle: { whiteSpace: "nowrap" },
-      }}
-    >
-
-    </MaterialTable>
-  </Fragment>);
+      onRowAdd: uid ? onRowAdd : undefined,
+      // onRowDelete: uid ? onRowDelete : undefined,
+      onRowUpdate: uid ? onRowUpdate : undefined,
+    }}
+    options={{
+      headerStyle: { whiteSpace: "nowrap" },
+    }}
+  >
+  </MaterialTable>);
 }
