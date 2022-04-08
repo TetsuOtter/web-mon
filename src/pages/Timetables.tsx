@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { TTimetableDocument } from '../firestore/DBCtrler.types';
 import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLine, setTrain } from "../redux/dataManager";
 
 interface TimetableDataTableStruct extends TTimetableDocument {
   /** 時刻表ID */
@@ -47,11 +48,16 @@ function toTimetableDataTableStruct(id: string, d: TTimetableDocument): Timetabl
     timetable_id: id
   };
 }
+function fromTimetableDataTableStruct(d: TimetableDataTableStruct): TTimetableDocument {
+  const { timetable_id, ...value } = d;
+  return value;
+}
 
 const reduxSelector = (state: State) => {
   return {
     db: state.setCurrentUserReducer.dbCtrler,
     uid: state.setCurrentUserReducer.currentUser?.uid,
+    line_id: state.setLineReducer.lineDataId,
   };
 };
 
@@ -59,12 +65,27 @@ export const Timetables = () => {
   const [timetableData, setTimetableData] = useState<TimetableDataTableStruct[]>([]);
   const navigate = useNavigate();
   const params = getIDParams(useLocation());
-  const { db, uid } = useSelector(reduxSelector);
+  const { db, uid, line_id } = useSelector(reduxSelector);
+  const dispatch = useDispatch();
 
+  // クエリ文字列で指定されたデータIDをReduxに登録する処理
   useEffect(() => {
-    if (params["line-id"] === undefined || db === undefined)
+    if (!db || !params["line-id"] || params["line-id"] === line_id)
       return;
-    const line_id = params["line-id"];
+
+    db.getLineDoc(params["line-id"]).then(value => {
+      if (!value.exists())
+        return;
+
+      dispatch(setLine(value.id, value.data()));
+    });
+  }, [db, params, line_id, dispatch]);
+
+  // 指定された路線のデータを読み込む処理
+  useEffect(() => {
+    if (db === undefined || !line_id)
+      return;
+
     db.getAllTimetableDocs(line_id)
       .then(async (result) => {
         if (result.empty)
@@ -72,15 +93,18 @@ export const Timetables = () => {
 
         setTimetableData(result.docs.map(v => toTimetableDataTableStruct(v.id, v.data())));
       });
-  }, [db, params]);
+  }, [db, line_id]);
 
   const OPEN_THIS_TRAIN: Action<TimetableDataTableStruct> = {
     icon: "open_in_browser",
     tooltip: "開く",
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
-      if (params["line-id"] !== undefined)
-        navigate(`${SHOW_TIMETABLE_PAGE_URL}${generateParams({ "line-id": params["line-id"], "timetable-id": d.timetable_id })}`);
+
+      if (!line_id) {
+        dispatch(setTrain(d.timetable_id, fromTimetableDataTableStruct(d)));
+        navigate(`${SHOW_TIMETABLE_PAGE_URL}${generateParams({ "line-id": line_id, "timetable-id": d.timetable_id })}`);
+      }
     }
   };
 
