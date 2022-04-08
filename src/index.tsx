@@ -15,8 +15,7 @@ import Header from './header';
 
 const store = createStore(reducer);
 
-interface _IDParams
-{
+interface _IDParams {
   "line-id": string,
   "timetable-id": string,
   "station-id": string,
@@ -29,15 +28,13 @@ export const SHOW_TIMETABLE_PAGE_URL = "/show-timetable";
 
 export const WEST_MON_PAGE_ID = "westmon";
 
-function getParamStr<T>(key: keyof T, value: T): string
-{
+function getParamStr<T>(key: keyof T, value: T): string {
   if (value[key] === undefined)
     return "";
   else
     return `${key}=${value[key]}`;
 }
-export function generateParams(params: IDParams)
-{
+export function generateParams(params: IDParams) {
   const line_id = getParamStr("line-id", params);
   const timetable_id = getParamStr("timetable-id", params);
   const station_id = getParamStr("station-id", params);
@@ -52,8 +49,7 @@ export function generateParams(params: IDParams)
   return ret;
 }
 
-export function getIDParams(params: Location): IDParams
-{
+export function getIDParams(params: Location): IDParams {
   const query = new URLSearchParams(params.search);
   return {
     "line-id": query.get("line-id") ?? undefined,
