@@ -68,8 +68,8 @@ export const Lines = () => {
   const { db, uid } = useSelector(reduxSelector);
 
   useEffect(() => {
-    db?.getLineDocs(undefined, true).then(result => setLineData(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
-  }, [db]);
+    db?.getLineDocs(uid, true).then(result => setLineData(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
+  }, [db, uid]);
 
   const OPEN_THIS_LINE: Action<LineDataTableStruct> = {
     icon: "open_in_browser",
