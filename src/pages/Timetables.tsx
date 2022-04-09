@@ -22,7 +22,20 @@ const COLUMNS: Column<TimetableDataTableStruct>[] = [
     },
     initialEditValue: "Inbound",
   },
-  { title: "列番", field: "train_id", initialEditValue: "" },
+  {
+    title: "列番",
+    field: "train_id",
+    initialEditValue: "",
+    validate: (d) => {
+      if (d.train_id.length <= 0 || 128 <= d.train_id.length)
+        return {
+          isValid: false,
+          helperText: "1 Byte以上127 Byte以下"
+        }
+      else
+        return true;
+    }
+  },
   { title: "P列番", field: "sec_sys_train_id", initialEditValue: "" },
   { title: "通過設定", field: "sec_sys_sta_pass_setting", type: "boolean", initialEditValue: false },
   { title: "無線番号", field: "radio_ch", initialEditValue: "" },
