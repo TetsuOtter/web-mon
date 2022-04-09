@@ -151,7 +151,15 @@ export const Timetables = () => {
   };
 
   const onRowAdd = (data: TimetableDataTableStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (uid === undefined || db === undefined)
+      return Promise.reject("サインインして下さい");
+    if (!line_id)
+      return Promise.reject("路線IDが指定されていません");
+
+    return db.addTimetableDoc(line_id, fromTimetableDataTableStruct(data)).then(v => {
+      data.timetable_id = v.id;
+      setTimetableData([...timetableData, data]);
+    });
   };
 
   /* TODO: 列車の削除はサーバーサイドで行う処理であるため、そちらを実装し次第こちらにも実装する
@@ -161,7 +169,17 @@ export const Timetables = () => {
   */
 
   const onRowUpdate = (data: TimetableDataTableStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (uid === undefined || db === undefined)
+      return Promise.reject("サインインして下さい");
+    if (!line_id)
+      return Promise.reject("路線IDが指定されていません");
+
+    return db.updateTimetableDoc(line_id, data.timetable_id, fromTimetableDataTableStruct(data)).then(() => {
+      const orig = Array.from(timetableData);
+      const index = orig.findIndex(v => v.timetable_id === data.timetable_id);
+      orig[index] = data;
+      setTimetableData(orig);
+    });
   };
 
   return (<MaterialTable
