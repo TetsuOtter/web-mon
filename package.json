@@ -40,7 +40,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "ci": "rm -rf node_modules && yarn install --frozen-lockfile",
-    "emu": "firebase emulators:exec ./yarn_start.sh --only firestore,auth",
+    "emu": "firebase emulators:start --only firestore,auth",
+    "emu:exec": "firebase emulators:exec ./yarn_start.sh --only firestore,auth",
     "test:db": "firebase emulators:exec ./DBCtrler.test.sh --only firestore"
   },
   "eslintConfig": {
