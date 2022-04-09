@@ -111,7 +111,7 @@ export const Lines = () => {
 
         const result = (await db.getLineDoc(v.id)).data();
         if (result !== undefined)
-          lineData.push(toLineDataTableStruct(v.id, result));
+          setLineData([...lineData, toLineDataTableStruct(v.id, result)]);
         return;
       });
   };
