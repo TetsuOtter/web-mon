@@ -105,11 +105,11 @@ export const Lines = () => {
   const onRowAdd = (data: LineDataTableStruct): Promise<unknown> => {
     if (uid === undefined || db === undefined)
       return Promise.reject("サインインして下さい");
-    return db.createNewLineData(uid, data.disp_name)
-      .then(async (v) => {
-        await db.updateTimeMultipl(v.id, data.time_multipl);
 
+    return db.createNewLineData(uid, data.disp_name, data.time_multipl)
+      .then(async (v) => {
         const result = (await db.getLineDoc(v.id)).data();
+
         if (result !== undefined)
           setLineData([...lineData, toLineDataTableStruct(v.id, result)]);
         return;

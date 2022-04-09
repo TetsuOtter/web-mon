@@ -104,7 +104,7 @@ export class DBCtrler {
   //#endregion
 
   //#region add/update/remove LINE methods
-  public createNewLineData(user_id: string, disp_name: string): Promise<DocumentReference<TLineDocument>> {
+  public createNewLineData(user_id: string, disp_name: string, time_multipl: number = 1): Promise<DocumentReference<TLineDocument>> {
     const data: TLineDocument = {
       can_read: [user_id],
       can_write: [user_id],
@@ -112,7 +112,7 @@ export class DBCtrler {
       tag_list: [],
       hashed_read_pw: new Map<string, Date>(),
       hashed_write_pw: new Map<string, Date>(),
-      time_multipl: 1
+      time_multipl: time_multipl
     };
 
     return addDoc(this._LineCollectionRef(), data);
