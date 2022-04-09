@@ -81,36 +81,33 @@ const ServerSideTimetableDocConverter: FirestoreDataConverter<TServerSideTimetab
   }
 }
 
-export const TimetableDocConverter: FirestoreDataConverter<TTimetableDocument> = {
-  toFirestore: (_d) => {
-    const d = _d as TTimetableDocument;
+export const TimetableDocToFirestore = (d: Partial<TTimetableDocument>): Partial<TServerSideTimetableDocument> => ({
+  tags: d?.tags,
+  train_id: d?.train_id,
+  sec_sys_train_id: d?.sec_sys_train_id,
+  sec_sys_sta_pass_setting: d?.sec_sys_sta_pass_setting,
+  direction: d?.direction,
+  radio_ch: d?.radio_ch,
+  line_color: d?.line_color,
+  train_type: d?.train_type,
+  dep_from_name: d?.dep_from_name,
+  dep_from_time: fromDate(d?.dep_from_time),
+  dep_from_track_num: d?.dep_from_track_num,
+  work_to_name: d?.work_to_name,
+  work_to_time: fromDate(d?.work_to_time),
+  work_to_track_num: d?.work_to_track_num,
+  last_stop_name: d?.last_stop_name,
+  last_stop_time: fromDate(d?.last_stop_time),
+  last_stop_track_num: d?.last_stop_track_num,
+  office_name: d?.office_name,
+  work_number: d?.work_number,
+  effected_date: fromDate(d?.effected_date),
+  additional_info: d?.additional_info,
+  next_work: d?.next_work === null ? null : d?.next_work?.withConverter(ServerSideTimetableDocConverter)
+});
 
-    const ret: Partial<TServerSideTimetableDocument> = {
-      tags: d?.tags,
-      train_id: d?.train_id,
-      sec_sys_train_id: d?.sec_sys_train_id,
-      sec_sys_sta_pass_setting: d?.sec_sys_sta_pass_setting,
-      direction: d?.direction,
-      radio_ch: d?.radio_ch,
-      line_color: d?.line_color,
-      train_type: d?.train_type,
-      dep_from_name: d?.dep_from_name,
-      dep_from_time: fromDate(d?.dep_from_time),
-      dep_from_track_num: d?.dep_from_track_num,
-      work_to_name: d?.work_to_name,
-      work_to_time: fromDate(d?.work_to_time),
-      work_to_track_num: d?.work_to_track_num,
-      last_stop_name: d?.last_stop_name,
-      last_stop_time: fromDate(d?.last_stop_time),
-      last_stop_track_num: d?.last_stop_track_num,
-      office_name: d?.office_name,
-      work_number: d?.work_number,
-      effected_date: fromDate(d?.effected_date),
-      additional_info: d?.additional_info,
-      next_work: d?.next_work === null ? null : d?.next_work?.withConverter(ServerSideTimetableDocConverter)
-    };
-    return ret;
-  },
+export const TimetableDocConverter: FirestoreDataConverter<TTimetableDocument> = {
+  toFirestore: (_d) => TimetableDocToFirestore(_d as TTimetableDocument),
 
   fromFirestore: (ss, opt) => {
     const d = ss.data(opt) as TServerSideTimetableDocument;

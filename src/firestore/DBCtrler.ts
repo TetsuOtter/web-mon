@@ -1,7 +1,7 @@
 import { addDoc, arrayRemove, arrayUnion, collection, CollectionReference, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDocFromCache, getDocFromServer, getDocsFromCache, getDocsFromServer, orderBy, Query, query, QueryConstraint, QuerySnapshot, updateDoc, where, WithFieldValue } from "firebase/firestore";
 import { FirebaseFirestore as CompatFirestore } from "@firebase/firestore-types";
 import { TLineDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
-import { LineDocConverter, StationDocConverter, TimetableDocConverter } from "./DBCtrler.conv";
+import { LineDocConverter, StationDocConverter, TimetableDocConverter, TimetableDocToFirestore } from "./DBCtrler.conv";
 
 const COLLECTION_NAME_LINE = "line";
 const COLLECTION_NAME_TIMETABLE = "timetables";
@@ -180,7 +180,7 @@ export class DBCtrler {
     return addDoc(this._TimetableCollectionRef(line_id), data);
   }
   public updateTimetableDoc(line_id: string, timetable_id: string, data: Partial<TTimetableDocument>): Promise<void> {
-    return updateDoc(this._TimetableDocRef(line_id, timetable_id), data);
+    return updateDoc(this._TimetableDocRef(line_id, timetable_id), TimetableDocToFirestore(data));
   }
 
   // Timetable削除は未対応
