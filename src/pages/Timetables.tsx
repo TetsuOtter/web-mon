@@ -5,7 +5,7 @@ import { TTimetableDocument } from '../firestore/DBCtrler.types';
 import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLine, setTrain } from "../redux/dataManager";
+import { setLine, setTrain } from "../redux/setters";
 
 interface TimetableDataTableStruct extends TTimetableDocument {
   /** 時刻表ID */
@@ -74,7 +74,7 @@ const reduxSelector = (state: State) => {
   return {
     db: state.setCurrentUserReducer.dbCtrler,
     uid: state.setCurrentUserReducer.currentUser?.uid,
-    line_id: state.setLineReducer.lineDataId,
+    line_id: state.setSharedDataReducer.lineDataId,
   };
 };
 

@@ -3,7 +3,7 @@ import { DBCtrler } from "../firestore/DBCtrler";
 import { TStationDocument, TTimetableDocument, TLineDocument } from "../firestore/DBCtrler.types";
 import { firestore } from "../firestore/firebaseApp";
 
-export interface State {
+export interface SharedState {
   dbCtrler: DBCtrler | undefined,
 
   currentUser: User | null,
@@ -17,7 +17,7 @@ export interface State {
   stations: Map<string, TStationDocument> | undefined,
 }
 
-export const intiialState: State = {
+export const intiialSharedState: SharedState = {
   dbCtrler: new DBCtrler(firestore),
 
   currentUser: null,
