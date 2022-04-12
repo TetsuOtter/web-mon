@@ -105,7 +105,7 @@ export const Timetables = () => {
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
 
-      if (!line_id) {
+      if (line_id) {
         dispatch(setTrain(d.document_id, d));
         navigate(`${SHOW_TIMETABLE_PAGE_URL}${generateParams({ "line-id": line_id, "timetable-id": d.document_id })}`);
       }
