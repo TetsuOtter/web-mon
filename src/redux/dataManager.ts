@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { Reducer } from "redux";
 import { SetLinePayload, SetStationsPayload, SetTrainPayload } from "./payload.type";
 import { ActionWithPayload } from "./reducer";
-import { intiialLinesPageState, intiialSharedState, LinesPageState, SharedState, TLineDataListStruct } from "./state.type"
+import { intiialLinesPageState, intiialSharedState, intiialTimetablePageState, LinesPageState, SharedState, TimetablesPageState, TLineDataListStruct, TTimetableDataListStruct } from "./state.type"
 import * as TYPES from "./actionTypes";
 
 export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLinePayload | SetTrainPayload | SetStationsPayload | User | null>> = (state = intiialSharedState, action) => {
@@ -60,6 +60,22 @@ export const setLinesDataReducer: Reducer<LinesPageState, ActionWithPayload<TLin
         return {
           ...state,
           lineDataList: payload
+        };
+      }
+
+    default:
+      return state;
+  }
+}
+
+export const setTimetablesDataReducer: Reducer<TimetablesPageState, ActionWithPayload<TTimetableDataListStruct[]>> = (state = intiialTimetablePageState, action) => {
+  switch (action.type) {
+    case TYPES.SET_LINE_LIST:
+      {
+        const payload = action.payload as TTimetableDataListStruct[];
+        return {
+          ...state,
+          timetableDataList: payload
         };
       }
 

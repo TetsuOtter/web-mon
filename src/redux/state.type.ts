@@ -45,6 +45,16 @@ export const intiialLinesPageState: LinesPageState = {
   lineDataList: [],
 };
 
+export type TTimetableDataListStruct = (DocId & TTimetableDocument);
+
+export interface TimetablesPageState {
+  timetableDataList: TTimetableDataListStruct[],
+}
+
+export const intiialTimetablePageState: TimetablesPageState = {
+  timetableDataList: [],
+};
+
 export function ToWithId<T>(id: string, value: T): (DocId & T) {
   return {
     ...value,

@@ -5,3 +5,6 @@ export const SET_USER = "SET_USER";
 
 // Lines page actions
 export const SET_LINE_LIST = "SET_LINE_LIST";
+
+// Timetable page actions
+export const SET_TIMETABLE_LIST = "SET_TIMETABLE_LIST";

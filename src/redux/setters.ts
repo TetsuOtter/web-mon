@@ -3,7 +3,7 @@ import * as TYPES from "./actionTypes";
 import { TLineDocument, TTimetableDocument } from "../firestore/DBCtrler.types";
 import { SetLinePayload, SetStationsPayload, SetTrainPayload } from "./payload.type";
 import { User } from "firebase/auth";
-import { TLineDataList } from "./state.type";
+import { TLineDataListStruct, TTimetableDataListStruct } from "./state.type";
 
 export const setLine = (id: string, line: TLineDocument): ActionWithPayload<SetLinePayload> => ({
   type: TYPES.SET_LINE,
@@ -33,5 +33,10 @@ export const setCurrentUserAction = (user: User | null): ActionWithPayload<User 
 
 export const setLineDataList = (arr: TLineDataListStruct[]): ActionWithPayload<TLineDataListStruct[]> => ({
   type: TYPES.SET_LINE_LIST,
+  payload: arr,
+});
+
+export const setTimetableDataList = (arr: TTimetableDataListStruct[]): ActionWithPayload<TTimetableDataListStruct[]> => ({
+  type: TYPES.SET_TIMETABLE_LIST,
   payload: arr,
 });
