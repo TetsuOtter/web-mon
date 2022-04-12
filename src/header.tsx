@@ -6,7 +6,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
 import { useDispatch } from "react-redux";
-import { setCurrentUserAction } from "./redux/dataManager";
+import { setCurrentUserAction } from "./redux/setters";
 
 const APPBAR_STYLE: CSSProperties = {
   color: "white",
