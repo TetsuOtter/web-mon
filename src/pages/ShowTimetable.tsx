@@ -150,9 +150,9 @@ export const ShowTimetable = () => {
       isEditable: getIsEditable,
       isDeletable: getIsEditable,
 
-      onRowAdd: onRowAdd,
-      onRowDelete: onRowDelete,
-      onRowUpdate: onRowUpdate,
+      onRowAdd: user ? onRowAdd : undefined,
+      onRowDelete: user ? onRowDelete : undefined,
+      onRowUpdate: user ? onRowUpdate : undefined,
     }}
   >
 
