@@ -74,17 +74,13 @@ export const Timetables = () => {
 
   // クエリ文字列で指定されたデータIDをReduxに登録する処理
   useEffect(() => {
-    console.log("L90");
     if (!db || (!params["line-id"] && !line_id))
       return;
 
     if (line_id !== params["line-id"] && params["line-id"]) {
-      console.log("LLL");
-
       db.getLineDoc(params["line-id"]).then(value => {
         if (!value.exists())
           return;
-        console.log("LLL2");
 
         dispatch(setLine(value.id, value.data()));
       });
@@ -93,16 +89,13 @@ export const Timetables = () => {
 
   // 指定された路線のデータを読み込む処理
   useEffect(() => {
-    console.log("L104");
     if (db === undefined || !line_id)
       return;
-    console.log("LLL3");
 
     db.getAllTimetableDocs(line_id)
       .then(async (result) => {
         if (result.empty)
           result = await db.getAllTimetableDocs(line_id, true);
-        console.log("_LLL");
 
         setTimetableData(result.docs.map(v => ToWithId(v.id, v.data())));
       });
