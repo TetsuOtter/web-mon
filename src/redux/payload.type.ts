@@ -16,6 +16,7 @@ export type SharedStatePayloadTypes = (
   SetLinePayload
   | SetTrainPayload
   | TStationDataListStruct[]
+  | string
   | User
   | null
   | TLineDataListStruct[]

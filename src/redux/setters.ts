@@ -26,6 +26,11 @@ export const setStations = (map: TStationDataListStruct[]): ActionWithPayload<TS
   payload: map
 });
 
+export const setCurrentStationId = (id: string): ActionWithPayload<string> => ({
+  type: TYPES.SET_CURRENT_STATION,
+  payload: id,
+});
+
 export const setCurrentUserAction = (user: User | null): ActionWithPayload<User | null> => ({
   type: TYPES.SET_USER,
   payload: user

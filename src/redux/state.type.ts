@@ -15,6 +15,7 @@ export interface SharedState {
   trainDataId: string,
 
   stations: TStationDataListStruct[],
+  currentStationId: string,
 
   timetableDataList: TTimetableDataListStruct[],
 
@@ -33,6 +34,7 @@ export const intiialSharedState: SharedState = {
   trainDataId: "",
 
   stations: [],
+  currentStationId: "",
 
   timetableDataList: [],
 

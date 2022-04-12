@@ -53,6 +53,16 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
           stations: payload,
         };
       }
+
+    case TYPES.SET_CURRENT_STATION:
+      {
+        const payload = action.payload as string;
+        return {
+          ...state,
+          currentStationId: payload,
+        };
+      }
+
     case TYPES.SET_USER:
       {
         const payload = action.payload as (User | null);
