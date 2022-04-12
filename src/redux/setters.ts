@@ -31,7 +31,7 @@ export const setCurrentUserAction = (user: User | null): ActionWithPayload<User 
   payload: user
 });
 
-export const setLineDataList = (arr: TLineDataList): ActionWithPayload<TLineDataList> => ({
+export const setLineDataList = (arr: TLineDataListStruct[]): ActionWithPayload<TLineDataListStruct[]> => ({
   type: TYPES.SET_LINE_LIST,
   payload: arr,
 });

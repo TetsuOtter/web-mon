@@ -35,12 +35,24 @@ export interface DocId {
   document_id: string,
 };
 
-export type TLineDataList = (DocId & TLineDocument)[];
+export type TLineDataListStruct = (DocId & TLineDocument);
 
 export interface LinesPageState {
-  lineDataList: TLineDataList,
+  lineDataList: TLineDataListStruct[],
 }
 
 export const intiialLinesPageState: LinesPageState = {
   lineDataList: [],
 };
+
+export function ToWithId<T>(id: string, value: T): (DocId & T) {
+  return {
+    ...value,
+    document_id: id,
+  };
+}
+
+export function FromWithId<T>(withId: (DocId & T)): Omit<DocId & T, "document_id"> {
+  const { document_id, ...ret } = withId;
+  return ret;
+}

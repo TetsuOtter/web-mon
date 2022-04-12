@@ -8,12 +8,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLine, setLineDataList } from '../redux/setters';
 import { Refresh } from "@mui/icons-material"
 import { IconButton } from '@mui/material';
+import { TLineDataListStruct, ToWithId } from '../redux/state.type';
 
-interface LineDataTableStruct extends TLineDocument {
-  document_id: string,
-}
-
-const COLUMNS: Column<LineDataTableStruct>[] = [
+const COLUMNS: Column<TLineDataListStruct>[] = [
   {
     title: "表示名",
     field: "disp_name"
@@ -51,13 +48,6 @@ const COLUMNS: Column<LineDataTableStruct>[] = [
   },
 ];
 
-function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct {
-  return {
-    ...d,
-    document_id: id,
-  };
-}
-
 const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
@@ -72,10 +62,11 @@ export const Lines = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    loadLineDataList(false);
+    if (lineData.length <= 0)
+      loadLineDataList(false);
   }, [db, uid]);
 
-  const OPEN_THIS_LINE: Action<LineDataTableStruct> = {
+  const OPEN_THIS_LINE: Action<TLineDataListStruct> = {
     icon: "open_in_browser",
     tooltip: "開く",
     onClick: (_, data) => {
@@ -84,7 +75,7 @@ export const Lines = () => {
     }
   };
 
-  const RELOAD_THIS_LINE: Action<LineDataTableStruct> = {
+  const RELOAD_THIS_LINE: Action<TLineDataListStruct> = {
     icon: "refresh",
     tooltip: "更新",
     onClick: (_, data) => {
@@ -95,7 +86,7 @@ export const Lines = () => {
         const orig = Array.from(lineData);
         const data = result.data();
         if (data !== undefined) {
-          orig[index] = toLineDataTableStruct(result.id, data);
+          orig[index] = ToWithId(result.id, data);
           setLineDataList(orig);
         }
       });
@@ -104,16 +95,16 @@ export const Lines = () => {
 
   const loadLineDataList = (loadFromOnline = false) => {
     return db?.getLineDocs(uid, !!loadFromOnline).then(result =>
-      dispatch(setLineDataList(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))))
+      dispatch(setLineDataList(result.docs.map(v => ToWithId(v.id, v.data()))))
     );
   };
   const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadLineDataList(true);
 
-  const getIsEditable = (data?: LineDataTableStruct): boolean => {
+  const getIsEditable = (data?: TLineDataListStruct): boolean => {
     return !!uid && !!data?.can_write.includes(uid);
   };
 
-  const onRowAdd = (data: LineDataTableStruct): Promise<unknown> => {
+  const onRowAdd = (data: TLineDataListStruct): Promise<unknown> => {
     if (!uid || !db)
       return Promise.reject("サインインして下さい");
 
@@ -123,7 +114,7 @@ export const Lines = () => {
 
         if (result !== undefined) {
           dispatch(setLine(v.id, result));
-          dispatch(setLineDataList([...lineData, toLineDataTableStruct(v.id, result)]));
+          dispatch(setLineDataList([...lineData, ToWithId(v.id, result)]));
         }
         return;
       });
@@ -135,7 +126,7 @@ export const Lines = () => {
   };
   */
 
-  const onRowUpdate = (data: LineDataTableStruct): Promise<unknown> => {
+  const onRowUpdate = (data: TLineDataListStruct): Promise<unknown> => {
     if (db === undefined)
       return Promise.reject("サインインして下さい");
     return db.updateLineData(data.document_id, {
