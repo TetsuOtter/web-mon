@@ -24,13 +24,13 @@ const COLUMNS: Column<TTimetableDataListStruct>[] = [
     field: "train_id",
     initialEditValue: "",
     validate: (d) => {
-      if (d.train_id.length <= 0 || 128 <= d.train_id.length)
+      if (0 < d?.train_id?.length && d?.train_id?.length < 128)
+        return true;
+      else
         return {
           isValid: false,
           helperText: "1 Byte以上127 Byte以下"
         }
-      else
-        return true;
     }
   },
   { title: "P列番", field: "sec_sys_train_id", initialEditValue: "" },
