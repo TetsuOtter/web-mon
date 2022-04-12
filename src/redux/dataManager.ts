@@ -5,7 +5,7 @@ import { ActionWithPayload } from "./reducer";
 import { intiialSharedState, SharedState } from "./state.type"
 import * as TYPES from "./actionTypes";
 
-export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLinePayload | SetTrainPayload | SetStationsPayload>> = (state = intiialSharedState, action) => {
+export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLinePayload | SetTrainPayload | SetStationsPayload | User | null>> = (state = intiialSharedState, action) => {
   switch (action.type) {
     case TYPES.SET_LINE:
       {
@@ -39,17 +39,15 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLin
           stations: payload,
         };
       }
+    case TYPES.SET_USER:
+      {
+        const payload = action.payload as (User | null);
+        return {
+          ...state,
+          currentUser: payload,
+        };
+      }
 
   }
   return state;
 };
-
-export const setCurrentUserReducer: Reducer<SharedState, ActionWithPayload<User | null>> = (state = intiialSharedState, action) => {
-  if (action.type === TYPES.SET_USER)
-    return {
-      ...state,
-      currentUser: action.payload,
-    };
-  else
-    return state;
-}

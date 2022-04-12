@@ -15,7 +15,7 @@ interface Props {
 
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const user = useSelector<State, User | null>(v => v.setCurrentUserReducer.currentUser);
+  const user = useSelector<State, User | null>(v => v.setSharedDataReducer.currentUser);
   const navigate = useNavigate();
   const location = useLocation();
 

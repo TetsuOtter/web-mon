@@ -57,8 +57,8 @@ function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruc
 
 const reduxSelector = (state: State) => {
   return {
-    db: state.setCurrentUserReducer.dbCtrler,
-    uid: state.setCurrentUserReducer.currentUser?.uid,
+    db: state.setSharedDataReducer.dbCtrler,
+    uid: state.setSharedDataReducer.currentUser?.uid,
   };
 };
 
