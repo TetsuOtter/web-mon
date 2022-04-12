@@ -1,11 +1,13 @@
 import MaterialTable, { Action, Column } from 'material-table';
-import { useEffect } from 'react';
+import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, WEST_MON_PAGE_ID } from "../index";
 import { useDispatch, useSelector } from 'react-redux';
 import { State } from '../redux/reducer';
-import { ToWithId, TStationDataListStruct } from '../redux/state.type';
+import { FromWithId, ToWithId, TStationDataListStruct } from '../redux/state.type';
 import { setCurrentStationId, setStations } from '../redux/setters';
+import { Refresh } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 
 const COLUMNS: Column<TStationDataListStruct>[] = [
   { title: "駅位置", field: "location", type: "numeric" },
@@ -28,6 +30,7 @@ const COLUMNS: Column<TStationDataListStruct>[] = [
 const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
+    user: state.setSharedDataReducer.currentUser,
     line_id: state.setSharedDataReducer.lineDataId,
     train_id: state.setSharedDataReducer.trainDataId,
     stations: state.setSharedDataReducer.stations,
@@ -36,16 +39,13 @@ const reduxSelector = (state: State) => {
 
 export const ShowTimetable = () => {
   const navigate = useNavigate();
-  const { db, line_id, train_id, stations } = useSelector(reduxSelector);
+  const { db, user, line_id, train_id, stations } = useSelector(reduxSelector);
   const dispatch = useDispatch();
 
   const setStationsData = (arr: TStationDataListStruct[]) => dispatch(setStations(arr));
 
   useEffect(() => {
-    if (line_id && train_id) {
-      db?.get1to9StationDocs(line_id, train_id)
-        .then(v => setStationsData(v.docs.map(d => ToWithId(d.id, d.data()))));
-    }
+    loadStationDataList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [train_id]);
 
@@ -83,20 +83,46 @@ export const ShowTimetable = () => {
   }
 
   const getIsEditable = (data: TStationDataListStruct): boolean => {
-    return true;
+    return !!user;
   };
 
   const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (line_id && train_id && db)
+      return db.addStationDoc(line_id, train_id, FromWithId(data)).then(v => {
+        data.document_id = v.id;
+        return dispatch(setStations([...stations, data]));
+      });
+    else
+      return Promise.reject();
   };
 
   const onRowDelete = (data: TStationDataListStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (line_id && train_id && db)
+      return db.deleteStationDoc(line_id, train_id, data.document_id).then(() =>
+        dispatch(setStations(stations.filter(v => v.document_id !== data.document_id)))
+      );
+    else
+      return Promise.reject();
   };
 
   const onRowUpdate = (data: TStationDataListStruct): Promise<unknown> => {
-    return Promise.resolve();
+    if (line_id && train_id && db)
+      return db.updateStationDoc(line_id, train_id, data.document_id, FromWithId(data)).then(() =>
+        dispatch(setStations(stations.map(v => v.document_id === data.document_id ? data : v)))
+      );
+    else
+      return Promise.reject();
   };
+
+  const loadStationDataList = (loadfromServerAnyway?: boolean) => {
+    if (line_id && train_id && db)
+      return db.get1to9StationDocs(line_id, train_id).then(result =>
+        dispatch(setStations(result.docs.map(v => ToWithId(v.id, v.data()))))
+      );
+    else
+      return Promise.reject();
+  };
+  const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadStationDataList(true);
 
   return (<MaterialTable
     columns={COLUMNS}
@@ -105,7 +131,16 @@ export const ShowTimetable = () => {
       RELOAD_THIS_STATION,
     ]}
     data={stations}
-    title="駅一覧"
+    title={(
+      <div style={{ display: "flex" }}>
+        <IconButton
+          onClick={RELOAD_ALL}
+          style={{ margin: "auto" }}>
+          <Refresh />
+        </IconButton>
+        <h3 style={{ padding: "8pt, 0pt" }}>駅一覧</h3>
+      </div>
+    )}
     options={{
       headerStyle: {
         whiteSpace: "nowrap"
