@@ -1,13 +1,14 @@
 import MaterialTable, { Action, Column } from 'material-table';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
 import { TLineDocument } from '../firestore/DBCtrler.types';
 import { State } from '../redux/reducer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLine, setLineDataList } from '../redux/setters';
 
 interface LineDataTableStruct extends TLineDocument {
-  line_id: string,
+  document_id: string,
 }
 
 const COLUMNS: Column<LineDataTableStruct>[] = [
@@ -43,7 +44,7 @@ const COLUMNS: Column<LineDataTableStruct>[] = [
   },
   {
     title: "(内部ID)",
-    field: "line_id",
+    field: "document_id",
     editable: "never"
   },
 ];
@@ -51,7 +52,7 @@ const COLUMNS: Column<LineDataTableStruct>[] = [
 function toLineDataTableStruct(id: string, d: TLineDocument): LineDataTableStruct {
   return {
     ...d,
-    line_id: id,
+    document_id: id,
   };
 }
 
@@ -59,16 +60,17 @@ const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
     uid: state.setSharedDataReducer.currentUser?.uid,
+    lineData: state.setLinesDataReducer.lineDataList,
   };
 };
 
 export const Lines = () => {
-  const [lineData, setLineData] = useState<LineDataTableStruct[]>([]);
   const navigate = useNavigate();
-  const { db, uid } = useSelector(reduxSelector);
+  const { db, uid, lineData } = useSelector(reduxSelector);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    db?.getLineDocs(uid, true).then(result => setLineData(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
+    db?.getLineDocs(uid, true).then(result => setLineDataList(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
   }, [db, uid]);
 
   const OPEN_THIS_LINE: Action<LineDataTableStruct> = {
@@ -76,7 +78,7 @@ export const Lines = () => {
     tooltip: "開く",
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
-      navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({ "line-id": d.line_id })}`);
+      navigate(`${TIMETABLE_SELECT_PAGE_URL}${generateParams({ "line-id": d.document_id })}`);
     }
   };
 
@@ -86,13 +88,13 @@ export const Lines = () => {
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
 
-      db?.getLineDoc(d.line_id).then(result => {
-        const index = lineData.findIndex(v => v.line_id === d.line_id);
+      db?.getLineDoc(d.document_id).then(result => {
+        const index = lineData.findIndex(v => v.document_id === d.document_id);
         const orig = Array.from(lineData);
         const data = result.data();
         if (data !== undefined) {
           orig[index] = toLineDataTableStruct(result.id, data);
-          setLineData(orig);
+          setLineDataList(orig);
         }
       });
     }
@@ -110,8 +112,10 @@ export const Lines = () => {
       .then(async (v) => {
         const result = (await db.getLineDoc(v.id)).data();
 
-        if (result !== undefined)
-          setLineData([...lineData, toLineDataTableStruct(v.id, result)]);
+        if (result !== undefined) {
+          dispatch(setLine(v.id, result));
+          setLineDataList([...lineData, toLineDataTableStruct(v.id, result)]);
+        }
         return;
       });
   };
@@ -125,14 +129,14 @@ export const Lines = () => {
   const onRowUpdate = (data: LineDataTableStruct): Promise<unknown> => {
     if (db === undefined)
       return Promise.reject("サインインして下さい");
-    return db.updateLineData(data.line_id, {
+    return db.updateLineData(data.document_id, {
       disp_name: data.disp_name,
       time_multipl: data.time_multipl
     }).then(() => {
       const after = Array.from(lineData);
-      const index = after.findIndex(v => v.line_id === data.line_id);
+      const index = after.findIndex(v => v.document_id === data.document_id);
       after[index] = data;
-      setLineData(after);
+      setLineDataList(after);
     });
   };
 

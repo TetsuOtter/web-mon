@@ -30,3 +30,17 @@ export const intiialSharedState: SharedState = {
 
   stations: undefined
 };
+
+export interface DocId {
+  document_id: string,
+};
+
+export type TLineDataList = (DocId & TLineDocument)[];
+
+export interface LinesPageState {
+  lineDataList: TLineDataList,
+}
+
+export const intiialLinesPageState: LinesPageState = {
+  lineDataList: [],
+};
