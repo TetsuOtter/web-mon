@@ -14,7 +14,7 @@ export const setLine = (id: string, line: TLineDocument): ActionWithPayload<SetL
 });
 
 export const setTrain = (id: string, data: TTimetableDocument): ActionWithPayload<SetTrainPayload> => ({
-  type: TYPES.SET_LINE,
+  type: TYPES.SET_TRAIN,
   payload: {
     id: id,
     data: data
@@ -22,7 +22,7 @@ export const setTrain = (id: string, data: TTimetableDocument): ActionWithPayloa
 });
 
 export const setStations = (map: SetStationsPayload): ActionWithPayload<SetStationsPayload> => ({
-  type: TYPES.SET_LINE,
+  type: TYPES.SET_STATIONS,
   payload: map
 });
 
