@@ -32,8 +32,7 @@ export const ShowTimetable = () => {
   const db = new DBCtrler(firestore, true);
 
   useEffect(() => {
-    if (params["line-id"] !== undefined && params["timetable-id"] !== undefined)
-    {
+    if (params["line-id"] !== undefined && params["timetable-id"] !== undefined) {
       /*db.getTimetableDoc(params["line-id"], params["timetable-id"])
         .then(v => setTimetableData(v.data()));*/
       db.get1to9StationDocs(params["line-id"], params["timetable-id"])
@@ -65,8 +64,7 @@ export const ShowTimetable = () => {
         const index = stationsData.findIndex(v => v.document_id === d.document_id);
         const orig = Array.from(stationsData);
         const data = result.data();
-        if (data !== undefined)
-        {
+        if (data !== undefined) {
           orig[index] = { ...data, document_id: result.id };
           setStationsData(orig);
         }
