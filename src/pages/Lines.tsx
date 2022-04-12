@@ -1,11 +1,13 @@
 import MaterialTable, { Action, Column } from 'material-table';
-import { useEffect } from 'react';
+import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
 import { TLineDocument } from '../firestore/DBCtrler.types';
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLine, setLineDataList } from '../redux/setters';
+import { Refresh } from "@mui/icons-material"
+import { IconButton } from '@mui/material';
 
 interface LineDataTableStruct extends TLineDocument {
   document_id: string,
@@ -70,7 +72,7 @@ export const Lines = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    db?.getLineDocs(uid, true).then(result => setLineDataList(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))));
+    loadLineDataList(false);
   }, [db, uid]);
 
   const OPEN_THIS_LINE: Action<LineDataTableStruct> = {
@@ -100,12 +102,19 @@ export const Lines = () => {
     }
   }
 
+  const loadLineDataList = (loadFromOnline = false) => {
+    return db?.getLineDocs(uid, !!loadFromOnline).then(result =>
+      dispatch(setLineDataList(result.docs.map(v => toLineDataTableStruct(v.id, v.data()))))
+    );
+  };
+  const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadLineDataList(true);
+
   const getIsEditable = (data?: LineDataTableStruct): boolean => {
-    return !!uid;
+    return !!uid && !!data?.can_write.includes(uid);
   };
 
   const onRowAdd = (data: LineDataTableStruct): Promise<unknown> => {
-    if (uid === undefined || db === undefined)
+    if (!uid || !db)
       return Promise.reject("サインインして下さい");
 
     return db.createNewLineData(uid, data.disp_name, data.time_multipl)
@@ -114,7 +123,7 @@ export const Lines = () => {
 
         if (result !== undefined) {
           dispatch(setLine(v.id, result));
-          setLineDataList([...lineData, toLineDataTableStruct(v.id, result)]);
+          dispatch(setLineDataList([...lineData, toLineDataTableStruct(v.id, result)]));
         }
         return;
       });
@@ -136,7 +145,7 @@ export const Lines = () => {
       const after = Array.from(lineData);
       const index = after.findIndex(v => v.document_id === data.document_id);
       after[index] = data;
-      setLineDataList(after);
+      dispatch(setLineDataList(after));
     });
   };
 
@@ -147,7 +156,16 @@ export const Lines = () => {
       RELOAD_THIS_LINE,
     ]}
     data={lineData}
-    title="路線一覧"
+    title={(
+      <div style={{ display: "flex" }}>
+        <IconButton
+          onClick={RELOAD_ALL}
+          style={{ margin: "auto" }}>
+          <Refresh />
+        </IconButton>
+        <h3 style={{ padding: "8pt, 0pt" }}>路線一覧</h3>
+      </div>
+    )}
     editable={{
       isEditable: getIsEditable,
       isDeletable: getIsEditable,
