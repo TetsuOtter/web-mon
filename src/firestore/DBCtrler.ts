@@ -1,4 +1,4 @@
-import { addDoc, arrayRemove, arrayUnion, collection, CollectionReference, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDocFromCache, getDocFromServer, getDocsFromCache, getDocsFromServer, orderBy, Query, query, QueryConstraint, QuerySnapshot, updateDoc, where, WithFieldValue } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, CollectionReference, deleteDoc, doc, DocumentReference, DocumentSnapshot, enableIndexedDbPersistence, Firestore, getDocFromCache, getDocFromServer, getDocsFromCache, getDocsFromServer, orderBy, Query, query, QueryConstraint, QuerySnapshot, updateDoc, where, WithFieldValue } from "firebase/firestore";
 import { FirebaseFirestore as CompatFirestore } from "@firebase/firestore-types";
 import { TLineDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
 import { LineDocConverter, StationDocConverter, TimetableDocConverter, TimetableDocToFirestore } from "./DBCtrler.conv";
@@ -15,6 +15,9 @@ export class DBCtrler {
   constructor(db: Firestore | CompatFirestore, loadFromServerAnyway?: boolean) {
     this.db = db as Firestore;
     this.loadFromServerAnyway = loadFromServerAnyway ?? false;
+
+    enableIndexedDbPersistence(this.db)
+      .catch(() => this.loadFromServerAnyway = true);
   }
 
   private getDocFromCacheOrServer<T>(docRef: DocumentReference<T>, loadFromServerAnyway = false): Promise<DocumentSnapshot<T>> {
