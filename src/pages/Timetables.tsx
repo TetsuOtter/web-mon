@@ -1,10 +1,10 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
+import { useNavigate } from 'react-router-dom';
+import { generateParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLine, setTimetableDataList, setTrain } from "../redux/setters";
+import { setTimetableDataList, setTrain } from "../redux/setters";
 import { FromWithId, ToWithId, TTimetableDataListStruct } from '../redux/state.type';
 import { IconButton } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
@@ -67,26 +67,10 @@ const reduxSelector = (state: State) => {
 
 export const Timetables = () => {
   const navigate = useNavigate();
-  const params = getIDParams(useLocation());
   const { db, uid, line_id, timetableData } = useSelector(reduxSelector);
   const dispatch = useDispatch();
 
   const setTimetableData = (d: TTimetableDataListStruct[]) => dispatch(setTimetableDataList(d));
-
-  // クエリ文字列で指定されたデータIDをReduxに登録する処理
-  useEffect(() => {
-    if (!db || (!params["line-id"] && !line_id))
-      return;
-
-    if (line_id !== params["line-id"] && params["line-id"]) {
-      db.getLineDoc(params["line-id"]).then(value => {
-        if (!value.exists())
-          return;
-
-        dispatch(setLine(value.id, value.data()));
-      });
-    }
-  }, [params["line-id"]]);
 
   // 指定された路線のデータを読み込む処理
   useEffect(() => {
@@ -118,10 +102,10 @@ export const Timetables = () => {
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
 
-      if (params["line-id"] === undefined || db === undefined)
+      if (!db || !line_id)
         return;
 
-      db.getTimetableDoc(params["line-id"], d.document_id, true).then(result => {
+      db.getTimetableDoc(line_id, d.document_id, true).then(result => {
         const index = timetableData.findIndex(v => v.document_id === d.document_id);
         const orig = Array.from(timetableData);
         const data = result.data();

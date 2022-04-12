@@ -1,11 +1,11 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { generateParams, getIDParams, WEST_MON_PAGE_ID } from "../index";
+import { useNavigate } from 'react-router-dom';
+import { generateParams, WEST_MON_PAGE_ID } from "../index";
 import { useDispatch, useSelector } from 'react-redux';
 import { State } from '../redux/reducer';
 import { ToWithId, TStationDataListStruct } from '../redux/state.type';
-import { setStations } from '../redux/setters';
+import { setCurrentStationId, setStations } from '../redux/setters';
 
 const COLUMNS: Column<TStationDataListStruct>[] = [
   { title: "駅位置", field: "location", type: "numeric" },
@@ -28,7 +28,6 @@ const COLUMNS: Column<TStationDataListStruct>[] = [
 const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
-    uid: state.setSharedDataReducer.currentUser?.uid,
     line_id: state.setSharedDataReducer.lineDataId,
     train_id: state.setSharedDataReducer.trainDataId,
     stations: state.setSharedDataReducer.stations,
@@ -37,29 +36,28 @@ const reduxSelector = (state: State) => {
 
 export const ShowTimetable = () => {
   const navigate = useNavigate();
-  const params = getIDParams(useLocation());
-  const { db, uid, line_id, train_id, stations } = useSelector(reduxSelector);
+  const { db, line_id, train_id, stations } = useSelector(reduxSelector);
   const dispatch = useDispatch();
 
   const setStationsData = (arr: TStationDataListStruct[]) => dispatch(setStations(arr));
 
   useEffect(() => {
-    if (params["line-id"] !== undefined && params["timetable-id"] !== undefined) {
-      /*db.getTimetableDoc(params["line-id"], params["timetable-id"])
-        .then(v => setTimetableData(v.data()));*/
-      db?.get1to9StationDocs(params["line-id"], params["timetable-id"])
+    if (line_id && train_id) {
+      db?.get1to9StationDocs(line_id, train_id)
         .then(v => setStationsData(v.docs.map(d => ToWithId(d.id, d.data()))));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [train_id]);
 
   const START_FROM_THIS_STATION_IN_WESTMON: Action<TStationDataListStruct> = {
     icon: "open_in_browser",
     tooltip: "開く",
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
-      if (params["line-id"] !== undefined)
-        navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": params["line-id"], "timetable-id": params["timetable-id"], "station-id": d.document_id })}`);
+      if (line_id && train_id) {
+        dispatch(setCurrentStationId(d.document_id));
+        navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": line_id, "timetable-id": train_id, "station-id": d.document_id })}`);
+      }
     }
   };
 
@@ -69,10 +67,10 @@ export const ShowTimetable = () => {
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
 
-      if (params["line-id"] === undefined || params["timetable-id"] === undefined)
+      if (!line_id || !train_id)
         return;
 
-      db?.getStationDoc(params["line-id"], params["timetable-id"], d.document_id).then(result => {
+      db?.getStationDoc(line_id, train_id, d.document_id).then(result => {
         const index = stations.findIndex(v => v.document_id === d.document_id);
         const orig = Array.from(stations);
         const data = result.data();

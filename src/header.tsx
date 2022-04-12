@@ -5,22 +5,38 @@ import Auth from "./components/Auth";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
-import { useDispatch } from "react-redux";
-import { setCurrentUserAction } from "./redux/setters";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentStationId, setCurrentUserAction, setLine, setStations, setTrain } from "./redux/setters";
+import { getIDParams } from "./index";
+import { useLocation } from "react-router-dom";
+import { State } from "./redux/reducer";
+import { ToWithId } from "./redux/state.type";
 
 const APPBAR_STYLE: CSSProperties = {
   color: "white",
   background: "black",
 };
 
+const reduxSelector = (state: State) => {
+  return {
+    db: state.setSharedDataReducer.dbCtrler,
+    user: state.setSharedDataReducer.currentUser,
+    line_id: state.setSharedDataReducer.lineDataId,
+    timetable_id: state.setSharedDataReducer.trainDataId,
+    stations: state.setSharedDataReducer.stations,
+    station_id: state.setSharedDataReducer.currentStationId,
+  };
+};
+
 export const Header: FC = () => {
   const [isAuthVisible, setIsAuthVisible] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(!!auth.currentUser);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dispatch = useDispatch();
+  const params = getIDParams(useLocation());
+  const { line_id, timetable_id, station_id, stations, db, user } = useSelector(reduxSelector);
 
   const authButtonClicked = () => {
-    if (isSignedIn)
+    if (user)
       signOut(auth);
     else
       setIsAuthVisible(true);
@@ -28,10 +44,64 @@ export const Header: FC = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (_user) => {
-      setIsSignedIn(!!_user);
       dispatch(setCurrentUserAction(_user));
     });
   }, [dispatch]);
+
+  const loadAndSetLineData = (id?: string) => {
+    if (!id || !db)
+      return Promise.reject();
+
+    return db.getLineDoc(id).then(v => {
+      const gotData = v.data();
+      if (gotData)
+        return dispatch(setLine(v.id, gotData));
+      else
+        return Promise.reject();
+    });
+  };
+
+  const loadAndSetTimetableData = (_line_id?: string, _timetable_id?: string) => {
+    if (!_line_id || !_timetable_id || !db)
+      return Promise.reject();
+
+    return db.getTimetableDoc(_line_id, _timetable_id).then(v => {
+      const gotData = v.data();
+      if (gotData) {
+        const toReturn = dispatch(setTrain(v.id, gotData));
+
+        return db.get1to9StationDocs(_line_id, _timetable_id).then(v => {
+          dispatch(setStations(v.docs.map(d => ToWithId(d.id, d.data()))));
+          return toReturn;
+        });
+      }
+      else
+        return Promise.reject();
+    });
+  };
+
+  const setStationId = (_station_id?: string) => {
+    if (_station_id && stations?.find(v => v.document_id === _station_id))
+      return dispatch(setCurrentStationId(_station_id));
+    else
+      return {};
+  };
+
+  useEffect(() => {
+    const param_line_id = params["line-id"];
+    const param_timetable_id = params["timetable-id"];
+    const param_station_id = params["station-id"];
+
+    if (line_id !== param_line_id)
+      loadAndSetLineData(param_line_id)
+        .then(() => loadAndSetTimetableData(param_line_id, param_timetable_id))
+        .then(() => setStationId(param_station_id));
+    else if (timetable_id !== param_timetable_id)
+      loadAndSetTimetableData(param_line_id, param_timetable_id)
+        .then(() => setStationId(param_station_id));
+    else if (station_id !== param_station_id)
+      setStationId(param_station_id);
+  }, [params]);
 
   return (
     <AppBar
@@ -58,7 +128,7 @@ export const Header: FC = () => {
             onClick={authButtonClicked}
             color="inherit"
             variant="outlined"
-          >{isSignedIn ? "ログアウト" : "ログイン / 登録"}</Button>
+          >{user ? "ログアウト" : "ログイン / 登録"}</Button>
         </div>
       </Toolbar>
       <Dialog
