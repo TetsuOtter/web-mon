@@ -142,17 +142,13 @@ export const TimetableDocConverter: FirestoreDataConverter<TTimetableDocument> =
 export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
   toFirestore: (_d) => {
     const d = _d as TStationDocument;
-    const ret: TServerSideStationDocument = {
+    const ret: Partial<TServerSideStationDocument> = {
       full_name: d?.full_name,
       name_len_4: d?.name_len_4,
       location: d?.location,
       required_time_to_this_sta: d?.required_time_to_this_sta,
-      arrive_time_hh: d?.arrive_time_hh,
-      arrive_time_mm: d?.arrive_time_mm,
-      arrive_time_ss: d?.arrive_time_ss,
-      departure_time_hh: d?.departure_time_hh,
-      departure_time_mm: d?.departure_time_mm,
-      departure_time_ss: d?.departure_time_ss,
+      arrive_time: fromDate(d?.arrive_time),
+      departure_time: fromDate(d?.departure_time),
       is_pass: d?.is_pass,
       arr_symbol: d?.arr_symbol,
       dep_symbol: d?.dep_symbol,
@@ -174,12 +170,8 @@ export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
       name_len_4: d.name_len_4,
       location: d.location,
       required_time_to_this_sta: d.required_time_to_this_sta,
-      arrive_time_hh: d.arrive_time_hh,
-      arrive_time_mm: d.arrive_time_mm,
-      arrive_time_ss: d.arrive_time_ss,
-      departure_time_hh: d.departure_time_hh,
-      departure_time_mm: d.departure_time_mm,
-      departure_time_ss: d.departure_time_ss,
+      arrive_time: d.arrive_time.toDate(),
+      departure_time: d.departure_time.toDate(),
       is_pass: d.is_pass,
       arr_symbol: d.arr_symbol,
       dep_symbol: d.dep_symbol,

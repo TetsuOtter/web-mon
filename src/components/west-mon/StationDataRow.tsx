@@ -1,8 +1,7 @@
 import { TStationDocument } from "../../firestore/DBCtrler.types";
 import moji from "moji";
 
-interface StationDataRowProps
-{
+interface StationDataRowProps {
   y: number,
   color?: string,
   stationData?: TStationDocument,
@@ -16,13 +15,13 @@ export const StationDataRow = (props: StationDataRowProps) => {
 
   const color = props.color ?? "white";
 
-  const arrTimeHH = moji(props.stationData?.arrive_time_hh ?? "").convert("HE", "ZE").toString();
-  const arrTimeMM = moji(props.stationData?.arrive_time_mm ?? "").convert("HE", "ZE").toString();
-  const arrTimeSS = moji(props.stationData?.arrive_time_ss ?? "").convert("ZE", "HE").toString();
+  const arrTimeHH = moji(props.stationData?.arrive_time.getHours().toString() ?? "").convert("HE", "ZE").toString();
+  const arrTimeMM = moji(props.stationData?.arrive_time.getMinutes().toString() ?? "").convert("HE", "ZE").toString();
+  const arrTimeSS = moji(props.stationData?.arrive_time.getSeconds().toString() ?? "").convert("ZE", "HE").toString();
 
-  const depTimeHH = moji(props.stationData?.departure_time_hh ?? "").convert("HE", "ZE").toString();
-  const depTimeMM = moji(props.stationData?.departure_time_mm ?? "").convert("HE", "ZE").toString();
-  const depTimeSS = moji(props.stationData?.departure_time_ss ?? "").convert("ZE", "HE").toString();
+  const depTimeHH = moji(props.stationData?.departure_time.getHours().toString() ?? "").convert("HE", "ZE").toString();
+  const depTimeMM = moji(props.stationData?.departure_time.getMinutes().toString() ?? "").convert("HE", "ZE").toString();
+  const depTimeSS = moji(props.stationData?.departure_time.getSeconds().toString() ?? "").convert("ZE", "HE").toString();
 
   return (
     <svg x="0" y={props.y} height="54" width="720">
@@ -45,14 +44,14 @@ export const StationDataRow = (props: StationDataRowProps) => {
         <text y="50" x="35" width="32" textAnchor="end" fill={color} fontSize="16px" >{arrTimeHH}</text>
         <text y="50" x="35" width="16" fill={color} fontSize="16px" >{props.stationData?.arr_symbol}</text>
         <text y="50" x="50" width="32" fill={color} fontSize="16px" >{arrTimeMM}</text>
-        <text y="50" x="85" width="16" fill={color} fontSize="16px" >{(props.stationData?.arrive_time_ss ?? "") === "" ? "" : "."}</text>
+        <text y="50" x="85" width="16" fill={color} fontSize="16px" >{(props.stationData?.arrive_time.getSeconds() ?? 0) === 0 ? "" : "."}</text>
         <text y="50" x="100" width="16" fill={color} fontSize="16px" >{arrTimeSS}</text>
       </svg>
       <svg x="430" width="126">
         <text y="50" x="36" width="32" textAnchor="end" fill={color} fontSize="16px" >{depTimeHH}</text>
         <text y="50" x="36" width="16" fill={color} fontSize="16px" >{props.stationData?.dep_symbol}</text>
         <text y="50" x="52" width="32" fill={color} fontSize="16px" >{depTimeMM}</text>
-        <text y="50" x="84" width="16" fill={color} fontSize="16px" >{(props.stationData?.departure_time_ss ?? "") === "" ? "" : "."}</text>
+        <text y="50" x="84" width="16" fill={color} fontSize="16px" >{(props.stationData?.departure_time.getSeconds() ?? 0) === 0 ? "" : "."}</text>
         <text y="50" x="100" width="16" fill={color} fontSize="16px" >{depTimeSS}</text>
       </svg>
 
