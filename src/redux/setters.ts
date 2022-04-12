@@ -1,9 +1,9 @@
 import { ActionWithPayload } from "./reducer";
 import * as TYPES from "./actionTypes";
 import { TLineDocument, TTimetableDocument } from "../firestore/DBCtrler.types";
-import { SetLinePayload, SetStationsPayload, SetTrainPayload } from "./payload.type";
+import { SetLinePayload, SetTrainPayload } from "./payload.type";
 import { User } from "firebase/auth";
-import { TLineDataListStruct, TTimetableDataListStruct } from "./state.type";
+import { TLineDataListStruct, TStationDataListStruct, TTimetableDataListStruct } from "./state.type";
 
 export const setLine = (id: string, line: TLineDocument): ActionWithPayload<SetLinePayload> => ({
   type: TYPES.SET_LINE,
@@ -21,7 +21,7 @@ export const setTrain = (id: string, data: TTimetableDocument): ActionWithPayloa
   }
 });
 
-export const setStations = (map: SetStationsPayload): ActionWithPayload<SetStationsPayload> => ({
+export const setStations = (map: TStationDataListStruct[]): ActionWithPayload<TStationDataListStruct[]> => ({
   type: TYPES.SET_STATIONS,
   payload: map
 });

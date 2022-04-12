@@ -2,17 +2,11 @@ import MaterialTable, { Action, Column } from 'material-table';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DBCtrler } from '../firestore/DBCtrler';
-import { TStationDocument } from '../firestore/DBCtrler.types';
 import { firestore } from '../firestore/firebaseApp';
 import { generateParams, getIDParams, WEST_MON_PAGE_ID } from "../index";
+import { ToWithId, TStationDataListStruct } from '../redux/state.type';
 
-interface StationDataWithID extends TStationDocument
-{
-  /** 駅情報ID */
-  station_id: string,
-}
-
-const COLUMNS: Column<StationDataWithID>[] = [
+const COLUMNS: Column<TStationDataListStruct>[] = [
   { title: "駅位置", field: "location", type: "numeric" },
   { title: "駅名", field: "full_name" },
   { title: "4文字\n駅名", field: "name_len_4" },
@@ -27,12 +21,12 @@ const COLUMNS: Column<StationDataWithID>[] = [
   { title: "進出\n制限\n[km/h]", field: "run_out_limit", type: "numeric" },
   { title: "駅仕業", field: "sta_work" },
   { title: "表示色", field: "sta_color" },
-  { title: "(内部ID)", field: "station_id", editable: "never" },
+  { title: "(内部ID)", field: "document_id", editable: "never" },
 ];
 
 export const ShowTimetable = () => {
   // const [timetableData, setTimetableData] = useState<TTimetableDocument>();
-  const [stationsData, setStationsData] = useState<StationDataWithID[]>([]);
+  const [stationsData, setStationsData] = useState<TStationDataListStruct[]>([]);
   const navigate = useNavigate();
   const params = getIDParams(useLocation());
   const db = new DBCtrler(firestore, true);
@@ -43,22 +37,22 @@ export const ShowTimetable = () => {
       /*db.getTimetableDoc(params["line-id"], params["timetable-id"])
         .then(v => setTimetableData(v.data()));*/
       db.get1to9StationDocs(params["line-id"], params["timetable-id"])
-        .then(v => setStationsData(v.docs.map(d => ({ ...d.data(), station_id: d.id }))));
+        .then(v => setStationsData(v.docs.map(d => ToWithId(d.id, d.data()))));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const START_FROM_THIS_STATION_IN_WESTMON: Action<StationDataWithID> = {
+  const START_FROM_THIS_STATION_IN_WESTMON: Action<TStationDataListStruct> = {
     icon: "open_in_browser",
     tooltip: "開く",
     onClick: (_, data) => {
       const d = Array.isArray(data) ? data[0] : data;
       if (params["line-id"] !== undefined)
-        navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": params["line-id"], "timetable-id": params["timetable-id"], "station-id": d.station_id })}`);
+        navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": params["line-id"], "timetable-id": params["timetable-id"], "station-id": d.document_id })}`);
     }
   };
 
-  const RELOAD_THIS_STATION: Action<StationDataWithID> = {
+  const RELOAD_THIS_STATION: Action<TStationDataListStruct> = {
     icon: "refresh",
     tooltip: "更新",
     onClick: (_, data) => {
@@ -67,32 +61,32 @@ export const ShowTimetable = () => {
       if (params["line-id"] === undefined || params["timetable-id"] === undefined)
         return;
 
-      db.getStationDoc(params["line-id"], params["timetable-id"], d.station_id).then(result => {
-        const index = stationsData.findIndex(v => v.station_id === d.station_id);
+      db.getStationDoc(params["line-id"], params["timetable-id"], d.document_id).then(result => {
+        const index = stationsData.findIndex(v => v.document_id === d.document_id);
         const orig = Array.from(stationsData);
         const data = result.data();
         if (data !== undefined)
         {
-          orig[index] = {...data, station_id: result.id};
+          orig[index] = { ...data, document_id: result.id };
           setStationsData(orig);
         }
       });
     }
   }
 
-  const getIsEditable = (data: StationDataWithID): boolean => {
+  const getIsEditable = (data: TStationDataListStruct): boolean => {
     return true;
   };
 
-  const onRowAdd = (data: StationDataWithID): Promise<unknown> => {
+  const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
     return Promise.resolve();
   };
 
-  const onRowDelete = (data: StationDataWithID): Promise<unknown> => {
+  const onRowDelete = (data: TStationDataListStruct): Promise<unknown> => {
     return Promise.resolve();
   };
 
-  const onRowUpdate = (data: StationDataWithID): Promise<unknown> => {
+  const onRowUpdate = (data: TStationDataListStruct): Promise<unknown> => {
     return Promise.resolve();
   };
 

@@ -1,8 +1,8 @@
 import { User } from "firebase/auth";
 import { Reducer } from "redux";
-import { SetLinePayload, SetStationsPayload, SetTrainPayload, SharedStatePayloadTypes } from "./payload.type";
+import { SetLinePayload, SetTrainPayload, SharedStatePayloadTypes } from "./payload.type";
 import { ActionWithPayload } from "./reducer";
-import { intiialSharedState, SharedState, TLineDataListStruct, TTimetableDataListStruct } from "./state.type"
+import { intiialSharedState, SharedState, TLineDataListStruct, TStationDataListStruct, TTimetableDataListStruct } from "./state.type"
 import * as TYPES from "./actionTypes";
 
 export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SharedStatePayloadTypes>> = (state = intiialSharedState, action) => {
@@ -16,7 +16,7 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
           lineData: payload.data,
           trainDataId: "",
           trainData: undefined,
-          stations: undefined,
+          stations: [],
 
           // LineIDに更新があった場合は、時刻表データにも変更があるはずであり、従ってreduxストアでのキャッシュをクリアしておく
           timetableDataList: state.lineDataId === payload.id ? state.timetableDataList : [],
@@ -30,13 +30,13 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
           ...state,
           trainDataId: payload.id,
           trainData: payload.data,
-          stations: undefined,
         };
+          stations: [],
       }
 
     case TYPES.SET_STATIONS:
       {
-        const payload = action.payload as SetStationsPayload;
+        const payload = action.payload as TStationDataListStruct[];
         return {
           ...state,
           stations: payload,
