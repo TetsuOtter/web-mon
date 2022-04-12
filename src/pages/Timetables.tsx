@@ -60,7 +60,7 @@ const reduxSelector = (state: State) => {
     db: state.setSharedDataReducer.dbCtrler,
     uid: state.setSharedDataReducer.currentUser?.uid,
     line_id: state.setSharedDataReducer.lineDataId,
-    timetableData: state.setTimetablesDataReducer.timetableDataList,
+    timetableData: state.setSharedDataReducer.timetableDataList,
   };
 };
 

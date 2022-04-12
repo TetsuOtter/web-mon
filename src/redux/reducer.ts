@@ -1,6 +1,6 @@
 import { AnyAction, combineReducers } from "redux";
-import { setLinesDataReducer, setSharedDataReducer, setTimetablesDataReducer } from "./dataManager";
-import { LinesPageState, SharedState, TimetablesPageState } from "./state.type";
+import { setSharedDataReducer } from "./dataManager";
+import { SharedState } from "./state.type";
 
 export interface ActionWithPayload<TPayload> extends AnyAction {
   type: string,
@@ -9,12 +9,8 @@ export interface ActionWithPayload<TPayload> extends AnyAction {
 
 export const reducer = combineReducers({
   setSharedDataReducer,
-  setLinesDataReducer,
-  setTimetablesDataReducer,
 });
 
 export interface State {
   setSharedDataReducer: SharedState,
-  setLinesDataReducer: LinesPageState,
-  setTimetablesDataReducer: TimetablesPageState,
 };

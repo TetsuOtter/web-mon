@@ -15,6 +15,10 @@ export interface SharedState {
   trainDataId: string,
 
   stations: Map<string, TStationDocument> | undefined,
+
+  timetableDataList: TTimetableDataListStruct[],
+
+  lineDataList: TLineDataListStruct[],
 }
 
 export const intiialSharedState: SharedState = {
@@ -28,7 +32,11 @@ export const intiialSharedState: SharedState = {
   trainData: undefined,
   trainDataId: "",
 
-  stations: undefined
+  stations: undefined,
+
+  timetableDataList: [],
+
+  lineDataList: [],
 };
 
 export interface DocId {
@@ -37,23 +45,7 @@ export interface DocId {
 
 export type TLineDataListStruct = (DocId & TLineDocument);
 
-export interface LinesPageState {
-  lineDataList: TLineDataListStruct[],
-}
-
-export const intiialLinesPageState: LinesPageState = {
-  lineDataList: [],
-};
-
 export type TTimetableDataListStruct = (DocId & TTimetableDocument);
-
-export interface TimetablesPageState {
-  timetableDataList: TTimetableDataListStruct[],
-}
-
-export const intiialTimetablePageState: TimetablesPageState = {
-  timetableDataList: [],
-};
 
 export function ToWithId<T>(id: string, value: T): (DocId & T) {
   return {

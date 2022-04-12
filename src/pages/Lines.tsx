@@ -2,7 +2,6 @@ import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
-import { TLineDocument } from '../firestore/DBCtrler.types';
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLine, setLineDataList } from '../redux/setters';
@@ -52,7 +51,7 @@ const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
     uid: state.setSharedDataReducer.currentUser?.uid,
-    lineData: state.setLinesDataReducer.lineDataList,
+    lineData: state.setSharedDataReducer.lineDataList,
   };
 };
 

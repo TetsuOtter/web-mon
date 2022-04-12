@@ -1,11 +1,11 @@
 import { User } from "firebase/auth";
 import { Reducer } from "redux";
-import { SetLinePayload, SetStationsPayload, SetTrainPayload } from "./payload.type";
+import { SetLinePayload, SetStationsPayload, SetTrainPayload, SharedStatePayloadTypes } from "./payload.type";
 import { ActionWithPayload } from "./reducer";
-import { intiialLinesPageState, intiialSharedState, intiialTimetablePageState, LinesPageState, SharedState, TimetablesPageState, TLineDataListStruct, TTimetableDataListStruct } from "./state.type"
+import { intiialSharedState, SharedState, TLineDataListStruct, TTimetableDataListStruct } from "./state.type"
 import * as TYPES from "./actionTypes";
 
-export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLinePayload | SetTrainPayload | SetStationsPayload | User | null>> = (state = intiialSharedState, action) => {
+export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SharedStatePayloadTypes>> = (state = intiialSharedState, action) => {
   switch (action.type) {
     case TYPES.SET_LINE:
       {
@@ -17,6 +17,9 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLin
           trainDataId: "",
           trainData: undefined,
           stations: undefined,
+
+          // LineIDに更新があった場合は、時刻表データにも変更があるはずであり、従ってreduxストアでのキャッシュをクリアしておく
+          timetableDataList: state.lineDataId === payload.id ? state.timetableDataList : [],
         };
       }
 
@@ -48,29 +51,16 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SetLin
         };
       }
 
-  }
-  return state;
-};
-
-export const setLinesDataReducer: Reducer<LinesPageState, ActionWithPayload<TLineDataListStruct[]>> = (state = intiialLinesPageState, action) => {
-  switch (action.type) {
     case TYPES.SET_LINE_LIST:
       {
         const payload = action.payload as TLineDataListStruct[];
         return {
           ...state,
-          lineDataList: payload
+          lineDataList: payload,
         };
       }
 
-    default:
-      return state;
-  }
-}
-
-export const setTimetablesDataReducer: Reducer<TimetablesPageState, ActionWithPayload<TTimetableDataListStruct[]>> = (state = intiialTimetablePageState, action) => {
-  switch (action.type) {
-    case TYPES.SET_LINE_LIST:
+    case TYPES.SET_TIMETABLE_LIST:
       {
         const payload = action.payload as TTimetableDataListStruct[];
         return {
@@ -78,8 +68,6 @@ export const setTimetablesDataReducer: Reducer<TimetablesPageState, ActionWithPa
           timetableDataList: payload
         };
       }
-
-    default:
-      return state;
   }
-}
+  return state;
+};
