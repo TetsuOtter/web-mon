@@ -10,21 +10,88 @@ import { Refresh } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 
 const COLUMNS: Column<TStationDataListStruct>[] = [
-  { title: "駅位置", field: "location", type: "numeric" },
-  { title: "駅名", field: "full_name" },
-  { title: "4文字\n駅名", field: "name_len_4" },
-  { title: "前駅からの\n所要時間\n[秒]", field: "required_time_to_this_sta", type: "numeric" },
-  { title: "到着時刻", field: "arrive_time", type: "time" },
-  { title: "到着時刻表示部に\n表示する文字", field: "arr_symbol" },
-  { title: "発車時刻", field: "departure_time", type: "time" },
-  { title: "発車時刻表示部に\n表示する文字", field: "arr_symbol" },
-  { title: "通過駅TF", field: "is_pass", type: "boolean" },
-  { title: "着発\n番線", field: "track_num" },
-  { title: "進入\n制限\n[km/h]", field: "run_in_limit", type: "numeric" },
-  { title: "進出\n制限\n[km/h]", field: "run_out_limit", type: "numeric" },
-  { title: "駅仕業", field: "sta_work" },
-  { title: "表示色", field: "sta_color" },
-  { title: "(内部ID)", field: "document_id", editable: "never" },
+  {
+    title: "駅位置",
+    field: "location",
+    type: "numeric",
+    initialEditValue: 0,
+  },
+  {
+    title: "駅名",
+    field: "full_name",
+    initialEditValue: "",
+  },
+  {
+    title: "4文字\n駅名",
+    field: "name_len_4",
+    initialEditValue: "",
+  },
+  {
+    title: "前駅からの\n所要時間\n[秒]",
+    field: "required_time_to_this_sta",
+    type: "numeric",
+    initialEditValue: 0,
+  },
+  {
+    title: "到着時刻",
+    field: "arrive_time",
+    type: "time",
+    initialEditValue: new Date(Date.now()),
+  },
+  {
+    title: "到着時刻表示部に\n表示する文字",
+    field: "arr_symbol",
+    initialEditValue: "",
+  },
+  {
+    title: "発車時刻",
+    field: "departure_time",
+    type: "time",
+    initialEditValue: new Date(Date.now()),
+  },
+  {
+    title: "発車時刻表示部に\n表示する文字",
+    field: "dep_symbol",
+    initialEditValue: "",
+  },
+  {
+    title: "通過駅TF",
+    field: "is_pass",
+    type: "boolean",
+    initialEditValue: false,
+  },
+  {
+    title: "着発\n番線",
+    field: "track_num",
+    initialEditValue: "",
+  },
+  {
+    title: "進入\n制限\n[km/h]",
+    field: "run_in_limit",
+    type: "numeric",
+    initialEditValue: 0
+  },
+  {
+    title: "進出\n制限\n[km/h]",
+    field: "run_out_limit",
+    type: "numeric",
+    initialEditValue: 0,
+  },
+  {
+    title: "駅仕業",
+    field: "sta_work",
+    initialEditValue: "",
+  },
+  {
+    title: "表示色",
+    field: "sta_color",
+    initialEditValue: "000000",
+  },
+  {
+    title: "(内部ID)",
+    field: "document_id",
+    editable: "never"
+  },
 ];
 
 const reduxSelector = (state: State) => {
