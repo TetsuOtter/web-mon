@@ -10,28 +10,39 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
     case TYPES.SET_LINE:
       {
         const payload = action.payload as SetLinePayload;
-        return {
-          ...state,
-          lineDataId: payload.id,
-          lineData: payload.data,
-          trainDataId: "",
-          trainData: undefined,
-          stations: [],
+        if (state.lineDataId === payload.id)
+          return {
+            ...state,
+            lineData: payload.data,
+          };
+        else
+          return {
+            ...state,
+            lineDataId: payload.id,
+            lineData: payload.data,
+            trainDataId: "",
+            trainData: undefined,
+            stations: [],
 
-          // LineIDに更新があった場合は、時刻表データにも変更があるはずであり、従ってreduxストアでのキャッシュをクリアしておく
-          timetableDataList: state.lineDataId === payload.id ? state.timetableDataList : [],
-        };
+            timetableDataList: [],
+          };
       }
 
     case TYPES.SET_TRAIN:
       {
         const payload = action.payload as SetTrainPayload;
-        return {
-          ...state,
-          trainDataId: payload.id,
-          trainData: payload.data,
-        };
-          stations: [],
+        if (state.trainDataId === payload.id)
+          return {
+            ...state,
+            trainData: payload.data,
+          };
+        else
+          return {
+            ...state,
+            trainDataId: payload.id,
+            trainData: payload.data,
+            stations: [],
+          };
       }
 
     case TYPES.SET_STATIONS:
