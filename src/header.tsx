@@ -49,21 +49,25 @@ export const Header: FC = () => {
   }, [dispatch]);
 
   const loadAndSetLineData = (id?: string) => {
-    if (!id || !db)
+    if (!id)
       return Promise.reject();
+    if (!db)
+      return Promise.reject("db was NULL (@loadAndSetLineData)");
 
     return db.getLineDoc(id).then(v => {
       const gotData = v.data();
       if (gotData)
         return dispatch(setLine(v.id, gotData));
       else
-        return Promise.reject();
+        return Promise.reject("gotData was empty (@loadAndSetLineData)");
     });
   };
 
   const loadAndSetTimetableData = (_line_id?: string, _timetable_id?: string) => {
-    if (!_line_id || !_timetable_id || !db)
+    if (!_line_id || !_timetable_id)
       return Promise.reject();
+    if (!db)
+      return Promise.reject("db was NULL (@loadAndSetTimetableData)");
 
     return db.getTimetableDoc(_line_id, _timetable_id).then(v => {
       const gotData = v.data();
@@ -76,7 +80,7 @@ export const Header: FC = () => {
         });
       }
       else
-        return Promise.reject();
+        return Promise.reject("gotData was empty (@loadAndSetTimetableData)");
     });
   };
 
@@ -95,10 +99,12 @@ export const Header: FC = () => {
     if (line_id !== param_line_id)
       loadAndSetLineData(param_line_id)
         .then(() => loadAndSetTimetableData(param_line_id, param_timetable_id))
-        .then(() => setStationId(param_station_id));
+        .then(() => setStationId(param_station_id))
+        .catch(console.warn);
     else if (timetable_id !== param_timetable_id)
       loadAndSetTimetableData(param_line_id, param_timetable_id)
-        .then(() => setStationId(param_station_id));
+        .then(() => setStationId(param_station_id))
+        .catch(console.warn);
     else if (station_id !== param_station_id)
       setStationId(param_station_id);
   }, [params]);
