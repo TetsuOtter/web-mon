@@ -1,12 +1,13 @@
 import MaterialTable, { Action, Column } from 'material-table';
-import { useEffect, useState } from 'react';
+import { MouseEventHandler, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { TTimetableDocument } from '../firestore/DBCtrler.types';
 import { generateParams, getIDParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLine, setTimetableDataList, setTrain } from "../redux/setters";
 import { FromWithId, ToWithId, TTimetableDataListStruct } from '../redux/state.type';
+import { IconButton } from '@mui/material';
+import { Refresh } from '@mui/icons-material';
 
 const COLUMNS: Column<TTimetableDataListStruct>[] = [
   {
@@ -89,16 +90,13 @@ export const Timetables = () => {
 
   // 指定された路線のデータを読み込む処理
   useEffect(() => {
-    if (db === undefined || !line_id)
+    if (db === undefined || !line_id || timetableData.length > 0)
       return;
 
-    db.getAllTimetableDocs(line_id)
-      .then(async (result) => {
-        if (result.empty)
-          result = await db.getAllTimetableDocs(line_id, true);
-
-        setTimetableData(result.docs.map(v => ToWithId(v.id, v.data())));
-      });
+    loadTimetableDataList()?.then(v => {
+      if (v.payload.length <= 0)
+        loadTimetableDataList(true);
+    });
   }, [line_id]);
 
   const OPEN_THIS_TRAIN: Action<TTimetableDataListStruct> = {
@@ -171,6 +169,13 @@ export const Timetables = () => {
     });
   };
 
+  const loadTimetableDataList = (loadFromOnline = false) => {
+    return db?.getAllTimetableDocs(line_id, !!loadFromOnline).then(result =>
+      dispatch(setTimetableDataList(result.docs.map(v => ToWithId(v.id, v.data()))))
+    );
+  };
+  const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadTimetableDataList(true);
+
   return (<MaterialTable
     columns={COLUMNS}
     actions={[
@@ -178,7 +183,16 @@ export const Timetables = () => {
       RELOAD_THIS_TRAIN,
     ]}
     data={timetableData}
-    title="時刻表一覧"
+    title={(
+      <div style={{ display: "flex" }}>
+        <IconButton
+          onClick={RELOAD_ALL}
+          style={{ margin: "auto" }}>
+          <Refresh />
+        </IconButton>
+        <h3 style={{ padding: "8pt, 0pt" }}>時刻表一覧</h3>
+      </div>
+    )}
     options={{
       headerStyle: {
         whiteSpace: "nowrap"
