@@ -21,7 +21,9 @@ function toDic(map: any): TFirestoreDictionary<Timestamp> | undefined {
 }
 
 function fromDate(date?: Date): Timestamp | undefined {
-  return date ? Timestamp.fromDate(date) : undefined;
+  return date
+    ? (typeof date === "string" ? Timestamp.fromDate(new Date(date)) : Timestamp.fromMillis(date.getTime()))
+    : undefined;
 }
 
 export const LineDocConverter: FirestoreDataConverter<TLineDocument> = {
