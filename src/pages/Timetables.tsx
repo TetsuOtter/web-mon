@@ -8,6 +8,7 @@ import { setTimetableDataList, setTrain } from "../redux/setters";
 import { FromWithId, ToWithId, TTimetableDataListStruct } from '../redux/state.type';
 import { IconButton } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
+import { DEFAULT_DATE, getTodaysDate, TimetableDocInitValue } from '../firestore/DBCtrler.types.initValues';
 
 const COLUMNS: Column<TTimetableDataListStruct>[] = [
   {
@@ -39,17 +40,17 @@ const COLUMNS: Column<TTimetableDataListStruct>[] = [
   { title: "線の色", field: "line_color", initialEditValue: "000000" },
   { title: "種別", field: "train_type", initialEditValue: "" },
   { title: "乗務開始駅", field: "dep_from_name", initialEditValue: "" },
-  { title: "乗務開始時刻", field: "dep_from_time", type: "time", initialEditValue: new Date(Date.now()) },
+  { title: "乗務開始時刻", field: "dep_from_time", type: "time", initialEditValue: DEFAULT_DATE },
   { title: "乗務開始番線", field: "dep_from_track_num", initialEditValue: "" },
   { title: "乗務終了駅", field: "work_to_name", initialEditValue: "" },
-  { title: "乗務終了時刻", field: "work_to_time", type: "time", initialEditValue: new Date(Date.now()) },
+  { title: "乗務終了時刻", field: "work_to_time", type: "time", initialEditValue: DEFAULT_DATE },
   { title: "乗務終了番線", field: "work_to_track_num", initialEditValue: "" },
   { title: "列車終着駅", field: "last_stop_name", initialEditValue: "" },
-  { title: "列車終着時刻", field: "last_stop_time", type: "time", initialEditValue: new Date(Date.now()) },
+  { title: "列車終着時刻", field: "last_stop_time", type: "time", initialEditValue: DEFAULT_DATE },
   { title: "列車終着番線", field: "last_stop_track_num", initialEditValue: "" },
   { title: "乗務員区所", field: "office_name", initialEditValue: "" },
   { title: "行路番号", field: "work_number", initialEditValue: "" },
-  { title: "ダイヤ発効日", field: "effected_date", type: "date", initialEditValue: new Date(new Date(Date.now()).setHours(0, 0, 0, 0)) },
+  { title: "ダイヤ発効日", field: "effected_date", type: "date", initialEditValue: getTodaysDate() },
   { title: "付帯情報", field: "additional_info", type: "string", initialEditValue: "" },
   { title: "tags", field: "tags", editable: "never", render: () => (<p>(準備中)</p>), initialEditValue: [] },
   { title: "次列車", field: "next_work", editable: "never", render: () => (<p>(準備中)</p>), initialEditValue: null },
@@ -127,6 +128,11 @@ export const Timetables = () => {
     if (!line_id)
       return Promise.reject("路線IDが指定されていません");
 
+    data = {
+      ...TimetableDocInitValue,
+      ...data,
+    };
+    console.log(data);
     return db.addTimetableDoc(line_id, FromWithId(data)).then(v => {
       data.document_id = v.id;
       setTimetableData([...timetableData, data]);

@@ -8,6 +8,7 @@ import { FromWithId, ToWithId, TStationDataListStruct } from '../redux/state.typ
 import { setCurrentStationId, setStations } from '../redux/setters';
 import { Refresh } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import { DEFAULT_DATE, StationDocInitValue } from '../firestore/DBCtrler.types.initValues';
 
 const COLUMNS: Column<TStationDataListStruct>[] = [
   {
@@ -36,7 +37,7 @@ const COLUMNS: Column<TStationDataListStruct>[] = [
     title: "到着時刻",
     field: "arrive_time",
     type: "time",
-    initialEditValue: new Date(Date.now()),
+    initialEditValue: DEFAULT_DATE,
   },
   {
     title: "到着時刻表示部に\n表示する文字",
@@ -47,7 +48,7 @@ const COLUMNS: Column<TStationDataListStruct>[] = [
     title: "発車時刻",
     field: "departure_time",
     type: "time",
-    initialEditValue: new Date(Date.now()),
+    initialEditValue: DEFAULT_DATE,
   },
   {
     title: "発車時刻表示部に\n表示する文字",
@@ -154,11 +155,13 @@ export const ShowTimetable = () => {
   };
 
   const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
-    if (line_id && train_id && db)
+    if (line_id && train_id && db) {
+      data = { ...StationDocInitValue, ...data };
       return db.addStationDoc(line_id, train_id, FromWithId(data)).then(v => {
         data.document_id = v.id;
         return dispatch(setStations([...stations, data]));
       });
+    }
     else
       return Promise.reject();
   };
