@@ -107,6 +107,7 @@ export const Header: FC = () => {
         .catch(console.warn);
     else if (station_id !== param_station_id)
       setStationId(param_station_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   return (

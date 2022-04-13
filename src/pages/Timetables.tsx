@@ -82,6 +82,7 @@ export const Timetables = () => {
       if (v.payload.length <= 0)
         loadTimetableDataList(true);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [line_id]);
 
   const OPEN_THIS_TRAIN: Action<TTimetableDataListStruct> = {

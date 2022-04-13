@@ -63,6 +63,7 @@ export const Lines = () => {
   useEffect(() => {
     if (lineData.length <= 0)
       loadLineDataList(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db, uid]);
 
   const OPEN_THIS_LINE: Action<TLineDataListStruct> = {
