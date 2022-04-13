@@ -1,13 +1,14 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateParams, getIsEditable as _getIsEditable, TIMETABLE_SELECT_PAGE_URL } from '../index';
+import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLine, setLineDataList } from '../redux/setters';
 import { Refresh } from "@mui/icons-material"
 import { IconButton } from '@mui/material';
 import { TLineDataListStruct, ToWithId } from '../redux/state.type';
+import { getCanEditThisLine } from '../customHooks/useCanEditThisLine';
 
 const COLUMNS: Column<TLineDataListStruct>[] = [
   {
@@ -100,7 +101,7 @@ export const Lines = () => {
   };
   const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadLineDataList(true);
 
-  const getIsEditable = (data?: TLineDataListStruct): boolean => _getIsEditable(uid, data);
+  const getIsEditable = (data?: TLineDataListStruct): boolean => getCanEditThisLine(uid, data);
 
   const onRowAdd = (data: TLineDataListStruct): Promise<unknown> => {
     if (!uid || !db)

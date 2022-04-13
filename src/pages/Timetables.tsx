@@ -1,7 +1,7 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateParams, getIsEditable as _getIsEditable, SHOW_TIMETABLE_PAGE_URL } from "../index";
+import { generateParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTimetableDataList, setTrain } from "../redux/setters";
@@ -9,6 +9,7 @@ import { FromWithId, ToWithId, TTimetableDataListStruct } from '../redux/state.t
 import { IconButton } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
 import { DEFAULT_DATE, getTodaysDate, TimetableDocInitValue } from '../firestore/DBCtrler.types.initValues';
+import { useCanEditThisLine } from '../customHooks/useCanEditThisLine';
 
 const COLUMNS: Column<TTimetableDataListStruct>[] = [
   {
@@ -60,16 +61,15 @@ const COLUMNS: Column<TTimetableDataListStruct>[] = [
 const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
-    uid: state.setSharedDataReducer.currentUser?.uid,
     line_id: state.setSharedDataReducer.lineDataId,
-    line_data: state.setSharedDataReducer.lineData,
     timetableData: state.setSharedDataReducer.timetableDataList,
   };
 };
 
 export const Timetables = () => {
   const navigate = useNavigate();
-  const { db, uid, line_id, line_data, timetableData } = useSelector(reduxSelector);
+  const { db, line_id, timetableData } = useSelector(reduxSelector);
+  const canEditThisLine = useCanEditThisLine();
   const dispatch = useDispatch();
 
   const setTimetableData = (d: TTimetableDataListStruct[]) => dispatch(setTimetableDataList(d));
@@ -120,11 +120,9 @@ export const Timetables = () => {
     }
   };
 
-  const getIsEditable = (data: TTimetableDataListStruct): boolean => _getIsEditable(uid, line_data);
-
   const onRowAdd = (data: TTimetableDataListStruct): Promise<unknown> => {
-    if (uid === undefined || db === undefined)
-      return Promise.reject("サインインして下さい");
+    if (!db)
+      return Promise.reject("DB初期化エラー");
     if (!line_id)
       return Promise.reject("路線IDが指定されていません");
 
@@ -146,8 +144,8 @@ export const Timetables = () => {
   */
 
   const onRowUpdate = (data: TTimetableDataListStruct): Promise<unknown> => {
-    if (uid === undefined || db === undefined)
-      return Promise.reject("サインインして下さい");
+    if (!db)
+      return Promise.reject("DB初期化エラー");
     if (!line_id)
       return Promise.reject("路線IDが指定されていません");
 
@@ -189,12 +187,12 @@ export const Timetables = () => {
       }
     }}
     editable={{
-      isEditable: getIsEditable,
-      isDeletable: getIsEditable,
+      isEditable: () => canEditThisLine,
+      isDeletable: () => canEditThisLine,
 
-      onRowAdd: uid ? onRowAdd : undefined,
+      onRowAdd: canEditThisLine ? onRowAdd : undefined,
       // onRowDelete: onRowDelete,
-      onRowUpdate: uid ? onRowUpdate : undefined,
+      onRowUpdate: canEditThisLine ? onRowUpdate : undefined,
     }}
   >
 

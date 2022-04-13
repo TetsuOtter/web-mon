@@ -4,22 +4,26 @@ import { SetLinePayload, SetTrainPayload, SharedStatePayloadTypes } from "./payl
 import { ActionWithPayload } from "./reducer";
 import { intiialSharedState, SharedState, TLineDataListStruct, TStationDataListStruct, TTimetableDataListStruct } from "./state.type"
 import * as TYPES from "./actionTypes";
+import { getCanEditThisLine } from "../customHooks/useCanEditThisLine";
 
 export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<SharedStatePayloadTypes>> = (state = intiialSharedState, action) => {
   switch (action.type) {
     case TYPES.SET_LINE:
       {
         const payload = action.payload as SetLinePayload;
+        const canEditThisLine = getCanEditThisLine(state.currentUser, payload.data);
         if (state.lineDataId === payload.id)
           return {
             ...state,
             lineData: payload.data,
+            canEditThisLine: canEditThisLine,
           };
         else
           return {
             ...state,
             lineDataId: payload.id,
             lineData: payload.data,
+            canEditThisLine: canEditThisLine,
             trainDataId: "",
             trainData: undefined,
             stations: [],
@@ -69,6 +73,7 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
         return {
           ...state,
           currentUser: payload,
+          canEditThisLine: getCanEditThisLine(payload, state.lineData),
         };
       }
 

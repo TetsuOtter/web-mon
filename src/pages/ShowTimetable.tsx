@@ -1,7 +1,7 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateParams, getIsEditable as _getIsEditable, WEST_MON_PAGE_ID } from "../index";
+import { generateParams, WEST_MON_PAGE_ID } from "../index";
 import { useDispatch, useSelector } from 'react-redux';
 import { State } from '../redux/reducer';
 import { FromWithId, ToWithId, TStationDataListStruct } from '../redux/state.type';
@@ -9,6 +9,7 @@ import { setCurrentStationId, setStations } from '../redux/setters';
 import { Refresh } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { DEFAULT_DATE, StationDocInitValue } from '../firestore/DBCtrler.types.initValues';
+import { useCanEditThisLine } from '../customHooks/useCanEditThisLine';
 
 const COLUMNS: Column<TStationDataListStruct>[] = [
   {
@@ -98,9 +99,7 @@ const COLUMNS: Column<TStationDataListStruct>[] = [
 const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
-    uid: state.setSharedDataReducer.currentUser?.uid,
     line_id: state.setSharedDataReducer.lineDataId,
-    line_data: state.setSharedDataReducer.lineData,
     train_id: state.setSharedDataReducer.trainDataId,
     stations: state.setSharedDataReducer.stations,
   };
@@ -108,7 +107,8 @@ const reduxSelector = (state: State) => {
 
 export const ShowTimetable = () => {
   const navigate = useNavigate();
-  const { db, uid, line_id, line_data, train_id, stations } = useSelector(reduxSelector);
+  const { db, line_id, train_id, stations } = useSelector(reduxSelector);
+  const canEditThisLine = useCanEditThisLine();
   const dispatch = useDispatch();
 
   const setStationsData = (arr: TStationDataListStruct[]) => dispatch(setStations(arr));
@@ -150,8 +150,6 @@ export const ShowTimetable = () => {
       });
     }
   }
-
-  const getIsEditable = (data: TStationDataListStruct): boolean => _getIsEditable(uid, line_data);
 
   const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
     if (line_id && train_id && db) {
@@ -216,12 +214,12 @@ export const ShowTimetable = () => {
       }
     }}
     editable={{
-      isEditable: getIsEditable,
-      isDeletable: getIsEditable,
+      isEditable: () => canEditThisLine,
+      isDeletable: () => canEditThisLine,
 
-      onRowAdd: uid ? onRowAdd : undefined,
-      onRowDelete: uid ? onRowDelete : undefined,
-      onRowUpdate: uid ? onRowUpdate : undefined,
+      onRowAdd: canEditThisLine ? onRowAdd : undefined,
+      onRowDelete: canEditThisLine ? onRowDelete : undefined,
+      onRowUpdate: canEditThisLine ? onRowUpdate : undefined,
     }}
   >
 

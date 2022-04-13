@@ -9,7 +9,9 @@ export interface SharedState {
   currentUser: User | null,
 
   lineData: TLineDocument | undefined,
-  lineDataId: string
+  lineDataId: string,
+
+  canEditThisLine: boolean,
 
   trainData: TTimetableDocument | undefined,
   trainDataId: string,
@@ -29,6 +31,8 @@ export const intiialSharedState: SharedState = {
 
   lineData: undefined,
   lineDataId: "",
+
+  canEditThisLine: false,
 
   trainData: undefined,
   trainDataId: "",
