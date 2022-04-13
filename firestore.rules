@@ -162,7 +162,7 @@ service cloud.firestore {
           return (
             d.full_name is string && d.full_name.size() > 0 && d.full_name.size() < 256
             && d.name_len_4 is string && d.name_len_4.size() > 0 && d.full_name.size() < 64
-            && d.location is float
+            && d.location is number
             && d.required_time_to_this_sta is int && d.required_time_to_this_sta >= 0
             && d.arrive_time is timestamp
             && d.departure_time is timestamp
