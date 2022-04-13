@@ -1,7 +1,7 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateParams, WEST_MON_PAGE_ID } from "../index";
+import { generateParams, getIsEditable as _getIsEditable, WEST_MON_PAGE_ID } from "../index";
 import { useDispatch, useSelector } from 'react-redux';
 import { State } from '../redux/reducer';
 import { FromWithId, ToWithId, TStationDataListStruct } from '../redux/state.type';
@@ -98,8 +98,9 @@ const COLUMNS: Column<TStationDataListStruct>[] = [
 const reduxSelector = (state: State) => {
   return {
     db: state.setSharedDataReducer.dbCtrler,
-    user: state.setSharedDataReducer.currentUser,
+    uid: state.setSharedDataReducer.currentUser?.uid,
     line_id: state.setSharedDataReducer.lineDataId,
+    line_data: state.setSharedDataReducer.lineData,
     train_id: state.setSharedDataReducer.trainDataId,
     stations: state.setSharedDataReducer.stations,
   };
@@ -107,7 +108,7 @@ const reduxSelector = (state: State) => {
 
 export const ShowTimetable = () => {
   const navigate = useNavigate();
-  const { db, user, line_id, train_id, stations } = useSelector(reduxSelector);
+  const { db, uid, line_id, line_data, train_id, stations } = useSelector(reduxSelector);
   const dispatch = useDispatch();
 
   const setStationsData = (arr: TStationDataListStruct[]) => dispatch(setStations(arr));
@@ -150,9 +151,7 @@ export const ShowTimetable = () => {
     }
   }
 
-  const getIsEditable = (data: TStationDataListStruct): boolean => {
-    return !!user;
-  };
+  const getIsEditable = (data: TStationDataListStruct): boolean => _getIsEditable(uid, line_data);
 
   const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
     if (line_id && train_id && db) {
@@ -220,9 +219,9 @@ export const ShowTimetable = () => {
       isEditable: getIsEditable,
       isDeletable: getIsEditable,
 
-      onRowAdd: user ? onRowAdd : undefined,
-      onRowDelete: user ? onRowDelete : undefined,
-      onRowUpdate: user ? onRowUpdate : undefined,
+      onRowAdd: uid ? onRowAdd : undefined,
+      onRowDelete: uid ? onRowDelete : undefined,
+      onRowUpdate: uid ? onRowUpdate : undefined,
     }}
   >
 

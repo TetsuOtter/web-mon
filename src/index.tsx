@@ -12,6 +12,8 @@ import { Timetables } from './pages/Timetables';
 import { WestMON } from './pages/WestMON';
 import { ShowTimetable } from './pages/ShowTimetable';
 import Header from './header';
+import { TLineDataListStruct } from './redux/state.type';
+import { TLineDocument } from './firestore/DBCtrler.types';
 
 const store = createStore(reducer);
 
@@ -57,6 +59,10 @@ export function getIDParams(params: Location): IDParams {
     "timetable-id": query.get("timetable-id") ?? undefined,
   };
 }
+
+export const getIsEditable = (uid?: string, data?: TLineDataListStruct | TLineDocument): boolean => {
+  return !!uid && (!!data?.can_write.includes("") || !!data?.can_write.includes(uid));
+};
 
 render(
   <StrictMode>

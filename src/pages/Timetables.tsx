@@ -1,7 +1,7 @@
 import MaterialTable, { Action, Column } from 'material-table';
 import { MouseEventHandler, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
+import { generateParams, getIsEditable as _getIsEditable, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTimetableDataList, setTrain } from "../redux/setters";
@@ -62,13 +62,14 @@ const reduxSelector = (state: State) => {
     db: state.setSharedDataReducer.dbCtrler,
     uid: state.setSharedDataReducer.currentUser?.uid,
     line_id: state.setSharedDataReducer.lineDataId,
+    line_data: state.setSharedDataReducer.lineData,
     timetableData: state.setSharedDataReducer.timetableDataList,
   };
 };
 
 export const Timetables = () => {
   const navigate = useNavigate();
-  const { db, uid, line_id, timetableData } = useSelector(reduxSelector);
+  const { db, uid, line_id, line_data, timetableData } = useSelector(reduxSelector);
   const dispatch = useDispatch();
 
   const setTimetableData = (d: TTimetableDataListStruct[]) => dispatch(setTimetableDataList(d));
@@ -119,9 +120,7 @@ export const Timetables = () => {
     }
   };
 
-  const getIsEditable = (data: TTimetableDataListStruct): boolean => {
-    return !!uid;
-  };
+  const getIsEditable = (data: TTimetableDataListStruct): boolean => _getIsEditable(uid, line_data);
 
   const onRowAdd = (data: TTimetableDataListStruct): Promise<unknown> => {
     if (uid === undefined || db === undefined)
