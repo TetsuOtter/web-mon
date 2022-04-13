@@ -101,7 +101,7 @@ export const Lines = () => {
   const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadLineDataList(true);
 
   const getIsEditable = (data?: TLineDataListStruct): boolean => {
-    return !!uid && !!data?.can_write.includes(uid);
+    return !!uid && (!!data?.can_write.includes("") || !!data?.can_write.includes(uid));
   };
 
   const onRowAdd = (data: TLineDataListStruct): Promise<unknown> => {
