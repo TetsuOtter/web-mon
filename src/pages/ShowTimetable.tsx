@@ -1,91 +1,225 @@
-import MaterialTable from 'material-table';
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { DBCtrler } from '../firestore/DBCtrler';
-import { TStationDocument } from '../firestore/DBCtrler.types';
-import { firestore } from '../firestore/firebaseApp';
-import { generateParams, getIDParams, WEST_MON_PAGE_ID } from "../index";
+import MaterialTable, { Action, Column } from 'material-table';
+import { MouseEventHandler, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { generateParams, WEST_MON_PAGE_ID } from "../index";
+import { useDispatch, useSelector } from 'react-redux';
+import { State } from '../redux/reducer';
+import { FromWithId, ToWithId, TStationDataListStruct } from '../redux/state.type';
+import { setCurrentStationId, setStations } from '../redux/setters';
+import { Refresh } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import { DEFAULT_DATE, StationDocInitValue } from '../firestore/DBCtrler.types.initValues';
+import { useCanEditThisLine } from '../customHooks/useCanEditThisLine';
 
-interface StationDataWithID extends TStationDocument
-{
-  /** 駅情報ID */
-  station_id: string,
-}
+const COLUMNS: Column<TStationDataListStruct>[] = [
+  {
+    title: "駅位置",
+    field: "location",
+    type: "numeric",
+    initialEditValue: 0,
+  },
+  {
+    title: "駅名",
+    field: "full_name",
+    initialEditValue: "",
+  },
+  {
+    title: "4文字\n駅名",
+    field: "name_len_4",
+    initialEditValue: "",
+  },
+  {
+    title: "前駅からの\n所要時間\n[秒]",
+    field: "required_time_to_this_sta",
+    type: "numeric",
+    initialEditValue: 0,
+  },
+  {
+    title: "到着時刻",
+    field: "arrive_time",
+    type: "time",
+    initialEditValue: DEFAULT_DATE,
+  },
+  {
+    title: "到着時刻表示部に\n表示する文字",
+    field: "arr_symbol",
+    initialEditValue: "",
+  },
+  {
+    title: "発車時刻",
+    field: "departure_time",
+    type: "time",
+    initialEditValue: DEFAULT_DATE,
+  },
+  {
+    title: "発車時刻表示部に\n表示する文字",
+    field: "dep_symbol",
+    initialEditValue: "",
+  },
+  {
+    title: "通過駅TF",
+    field: "is_pass",
+    type: "boolean",
+    initialEditValue: false,
+  },
+  {
+    title: "着発\n番線",
+    field: "track_num",
+    initialEditValue: "",
+  },
+  {
+    title: "進入\n制限\n[km/h]",
+    field: "run_in_limit",
+    type: "numeric",
+    initialEditValue: 0
+  },
+  {
+    title: "進出\n制限\n[km/h]",
+    field: "run_out_limit",
+    type: "numeric",
+    initialEditValue: 0,
+  },
+  {
+    title: "駅仕業",
+    field: "sta_work",
+    initialEditValue: "",
+  },
+  {
+    title: "表示色",
+    field: "sta_color",
+    initialEditValue: "000000",
+  },
+  {
+    title: "(内部ID)",
+    field: "document_id",
+    editable: "never"
+  },
+];
+
+const reduxSelector = (state: State) => {
+  return {
+    db: state.setSharedDataReducer.dbCtrler,
+    line_id: state.setSharedDataReducer.lineDataId,
+    train_id: state.setSharedDataReducer.trainDataId,
+    stations: state.setSharedDataReducer.stations,
+  };
+};
 
 export const ShowTimetable = () => {
-  // const [timetableData, setTimetableData] = useState<TTimetableDocument>();
-  const [stationsData, setStationsData] = useState<StationDataWithID[]>([]);
   const navigate = useNavigate();
-  const params = getIDParams(useLocation());
-  const db = new DBCtrler(firestore, true);
+  const { db, line_id, train_id, stations } = useSelector(reduxSelector);
+  const canEditThisLine = useCanEditThisLine();
+  const dispatch = useDispatch();
+
+  const setStationsData = (arr: TStationDataListStruct[]) => dispatch(setStations(arr));
 
   useEffect(() => {
-    if (params["line-id"] !== undefined && params["timetable-id"] !== undefined)
-    {
-      /*db.getTimetableDoc(params["line-id"], params["timetable-id"])
-        .then(v => setTimetableData(v.data()));*/
-      db.get1to9StationDocs(params["line-id"], params["timetable-id"])
-        .then(v => setStationsData(v.docs.map(d => ({ ...d.data(), station_id: d.id }))));
-    }
+    loadStationDataList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [train_id]);
+
+  const START_FROM_THIS_STATION_IN_WESTMON: Action<TStationDataListStruct> = {
+    icon: "open_in_browser",
+    tooltip: "開く",
+    onClick: (_, data) => {
+      const d = Array.isArray(data) ? data[0] : data;
+      if (line_id && train_id) {
+        dispatch(setCurrentStationId(d.document_id));
+        navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": line_id, "timetable-id": train_id, "station-id": d.document_id })}`);
+      }
+    }
+  };
+
+  const RELOAD_THIS_STATION: Action<TStationDataListStruct> = {
+    icon: "refresh",
+    tooltip: "更新",
+    onClick: (_, data) => {
+      const d = Array.isArray(data) ? data[0] : data;
+
+      if (!line_id || !train_id)
+        return;
+
+      db?.getStationDoc(line_id, train_id, d.document_id).then(result => {
+        const index = stations.findIndex(v => v.document_id === d.document_id);
+        const orig = Array.from(stations);
+        const data = result.data();
+        if (data !== undefined) {
+          orig[index] = { ...data, document_id: result.id };
+          setStationsData(orig);
+        }
+      });
+    }
+  }
+
+  const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
+    if (line_id && train_id && db) {
+      data = { ...StationDocInitValue, ...data };
+      return db.addStationDoc(line_id, train_id, FromWithId(data)).then(v => {
+        data.document_id = v.id;
+        return dispatch(setStations([...stations, data]));
+      });
+    }
+    else
+      return Promise.reject();
+  };
+
+  const onRowDelete = (data: TStationDataListStruct): Promise<unknown> => {
+    if (line_id && train_id && db)
+      return db.deleteStationDoc(line_id, train_id, data.document_id).then(() =>
+        dispatch(setStations(stations.filter(v => v.document_id !== data.document_id)))
+      );
+    else
+      return Promise.reject();
+  };
+
+  const onRowUpdate = (data: TStationDataListStruct): Promise<unknown> => {
+    if (line_id && train_id && db)
+      return db.updateStationDoc(line_id, train_id, data.document_id, FromWithId(data)).then(() =>
+        dispatch(setStations(stations.map(v => v.document_id === data.document_id ? data : v)))
+      );
+    else
+      return Promise.reject();
+  };
+
+  const loadStationDataList = (loadfromServerAnyway?: boolean) => {
+    if (line_id && train_id && db)
+      return db.get1to9StationDocs(line_id, train_id).then(result =>
+        dispatch(setStations(result.docs.map(v => ToWithId(v.id, v.data()))))
+      );
+    else
+      return Promise.reject();
+  };
+  const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadStationDataList(true);
 
   return (<MaterialTable
-    columns={[
-      { title: "駅位置", field: "location", type: "numeric" },
-      { title: "駅名", field: "full_name" },
-      { title: "4文字\n駅名", field: "name_len_4" },
-      { title: "前駅からの\n所要時間\n[秒]", field: "required_time_to_this_sta", type: "numeric" },
-      { title: "到着時刻", field: "arrive_time", type: "time" },
-      { title: "到着時刻表示部に\n表示する文字", field: "arr_symbol" },
-      { title: "発車時刻", field: "departure_time", type: "time" },
-      { title: "発車時刻表示部に\n表示する文字", field: "arr_symbol" },
-      { title: "通過駅TF", field: "is_pass", type: "boolean" },
-      { title: "着発\n番線", field: "track_num" },
-      { title: "進入\n制限\n[km/h]", field: "run_in_limit", type: "numeric" },
-      { title: "進出\n制限\n[km/h]", field: "run_out_limit", type: "numeric" },
-      { title: "駅仕業", field: "sta_work" },
-      { title: "表示色", field: "sta_color" },
-      { title: "(内部ID)", field: "station_id" },
-    ]}
+    columns={COLUMNS}
     actions={[
-      {
-        icon: "open_in_browser",
-        tooltip: "開く",
-        onClick: (_, data) => {
-          const d = Array.isArray(data) ? data[0] : data;
-          if (params["line-id"] !== undefined)
-            navigate(`/${WEST_MON_PAGE_ID}${generateParams({ "line-id": params["line-id"], "timetable-id": params["timetable-id"], "station-id": d.station_id })}`);
-        }
-      },
-      {
-        icon: "refresh",
-        tooltip: "更新",
-        onClick: (_, data) => {
-          const d = Array.isArray(data) ? data[0] : data;
-
-          if (params["line-id"] === undefined || params["timetable-id"] === undefined)
-            return;
-
-          db.getStationDoc(params["line-id"], params["timetable-id"], d.station_id).then(result => {
-            const index = stationsData.findIndex(v => v.station_id === d.station_id);
-            const orig = Array.from(stationsData);
-            const data = result.data();
-            if (data !== undefined)
-            {
-              orig[index] = {...data, station_id: result.id};
-              setStationsData(orig);
-            }
-          });
-        }
-      },
+      START_FROM_THIS_STATION_IN_WESTMON,
+      RELOAD_THIS_STATION,
     ]}
-    data={stationsData}
-    title="駅一覧"
+    data={stations}
+    title={(
+      <div style={{ display: "flex" }}>
+        <IconButton
+          onClick={RELOAD_ALL}
+          style={{ margin: "auto" }}>
+          <Refresh />
+        </IconButton>
+        <h3 style={{ padding: "8pt, 0pt" }}>駅一覧</h3>
+      </div>
+    )}
     options={{
       headerStyle: {
         whiteSpace: "nowrap"
       }
+    }}
+    editable={{
+      isEditable: () => canEditThisLine,
+      isDeletable: () => canEditThisLine,
+
+      onRowAdd: canEditThisLine ? onRowAdd : undefined,
+      onRowDelete: canEditThisLine ? onRowDelete : undefined,
+      onRowUpdate: canEditThisLine ? onRowUpdate : undefined,
     }}
   >
 

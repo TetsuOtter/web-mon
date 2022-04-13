@@ -6,17 +6,15 @@
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "@material-ui/core": "^4.12.3",
-    "@material-ui/icons": "^4.11.2",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.75",
     "@mui/material": "^5.5.3",
     "@reduxjs/toolkit": "^1.7.2",
     "firebase": "^9.6.7",
-    "material-table": "^1.69.3",
+    "material-table": "1.67.0",
     "moji": "^0.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-double-scrollbar": "^0.0.15",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
@@ -37,12 +35,15 @@
     "workbox-streams": "^5.1.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "ci": "rm -rf node_modules && yarn install --frozen-lockfile",
-    "test:db": "firebase emulators:exec ./DBCtrler.test.sh --only firestore"
+    "emu": "firebase emulators:start --only firestore,auth",
+    "emu:exec": "firebase emulators:exec ./yarn_start.sh --only firestore,auth",
+    "test:db": "firebase emulators:exec ./DBCtrler.test.sh --only firestore",
+    "deploy:rules": "firebase deploy --only firestore:rules"
   },
   "eslintConfig": {
     "extends": [

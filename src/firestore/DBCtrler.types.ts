@@ -3,8 +3,7 @@ import { DocumentReference, Timestamp } from "firebase/firestore";
 export type TFirestoreDictionary<TData> = { [key: string]: TData; };
 
 /** 路線データのデータ構造 */
-interface _ILineDocument<TMap>
-{
+interface _ILineDocument<TMap> {
   /**
    * 読み込み可能なユーザの一覧
    * emptyは全ユーザにマッチする = 全ユーザに読み込み権限を与える
@@ -53,8 +52,7 @@ export const Direction_Outbound: TDirection = "Outbound";
 
 
 /** 時刻表データのデータ構造 */
-interface _ITimetableDocument<TDate>
-{
+interface _ITimetableDocument<TDate> {
   /** 任意に設定できるタグの配列 (順不同) */
   tags: string[],
 
@@ -127,8 +125,7 @@ export type TTimetableDocument = _ITimetableDocument<Date>;
 /** 時刻表データのデータ構造 (サーバーサイド用) */
 export type TServerSideTimetableDocument = _ITimetableDocument<Timestamp>;
 
-interface _IStationDocument
-{
+interface _IStationDocument<TDate> {
   /** 駅名(省略なし) */
   full_name: string,
 
@@ -141,23 +138,11 @@ interface _IStationDocument
   /** 前の採時駅からこの駅までの所要時間 (「0」で非表示) */
   required_time_to_this_sta: number,
 
-  /** 到着時刻 (「時」の部分) */
-  arrive_time_hh: string,
+  /** 到着時刻 */
+  arrive_time: TDate,
 
-  /** 到着時刻 (「分」の部分) */
-  arrive_time_mm: string,
-
-  /** 到着時刻 (「秒」の部分) */
-  arrive_time_ss: string,
-
-  /** 発車/通過時刻 (「時」の部分) */
-  departure_time_hh: string,
-
-  /** 発車/通過時刻 (「分」の部分) */
-  departure_time_mm: string,
-
-  /** 発車/通過時刻 (「秒」の部分) */
-  departure_time_ss: string,
+  /** 発車/通過時刻 */
+  departure_time: TDate,
 
   /** 通過駅かどうか */
   is_pass: boolean,
@@ -193,6 +178,6 @@ interface _IStationDocument
 };
 
 /** 駅情報データのデータ構造 */
-export type TStationDocument = _IStationDocument;
+export type TStationDocument = _IStationDocument<Date>;
 /** 駅情報データのデータ構造 (サーバーサイド用) */
-export type TServerSideStationDocument = _IStationDocument;
+export type TServerSideStationDocument = _IStationDocument<Timestamp>;

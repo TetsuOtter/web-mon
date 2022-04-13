@@ -1,8 +1,7 @@
 import { StationDataRow } from "./StationDataRow";
 import { TStationDocument } from "../../firestore/DBCtrler.types";
 
-export interface TimetableProps
-{
+export interface TimetableProps {
   stations?: TStationDocument[],
   currentLocation?: number,
   x?: number,
@@ -12,13 +11,9 @@ export interface TimetableProps
 export const Timetable = (props: TimetableProps) => {
   const staD: TStationDocument = {
     arr_symbol: "：",
-    arrive_time_hh: "23",
-    arrive_time_mm: "59",
-    arrive_time_ss: "59",
+    arrive_time: new Date(2000, 0, 1, 22, 59, 59),
     dep_symbol: "===",
-    departure_time_hh: "",
-    departure_time_mm: "",
-    departure_time_ss: "",
+    departure_time: new Date(2000, 0, 1, 23, 59, 59),
     full_name: "フル尺駅名",
     is_pass: false,
     location: 1,
