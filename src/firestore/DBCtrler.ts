@@ -1,7 +1,7 @@
 import { addDoc, arrayRemove, arrayUnion, collection, CollectionReference, deleteDoc, doc, DocumentReference, DocumentSnapshot, enableIndexedDbPersistence, Firestore, getDocFromCache, getDocFromServer, getDocsFromCache, getDocsFromServer, orderBy, Query, query, QueryConstraint, QuerySnapshot, updateDoc, where, WithFieldValue } from "firebase/firestore";
 import { FirebaseFirestore as CompatFirestore } from "@firebase/firestore-types";
 import { TLineDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
-import { LineDocConverter, StationDocConverter, TimetableDocConverter, TimetableDocToFirestore } from "./DBCtrler.conv";
+import { LineDocConverter, StationDocConverter, StationDocToFirestore, TimetableDocConverter, TimetableDocToFirestore } from "./DBCtrler.conv";
 
 const COLLECTION_NAME_LINE = "line";
 const COLLECTION_NAME_TIMETABLE = "timetables";
@@ -192,7 +192,7 @@ export class DBCtrler {
     return addDoc(this._StationCollectionRef(line_id, timetable_id), data);
   }
   public updateStationDoc(line_id: string, timetable_id: string, station_id: string, data: Partial<TStationDocument>): Promise<void> {
-    return updateDoc(this._StationDocRef(line_id, timetable_id, station_id), data);
+    return updateDoc(this._StationDocRef(line_id, timetable_id, station_id), StationDocToFirestore(data));
   }
   public deleteStationDoc(line_id: string, timetable_id: string, station_id: string): Promise<void> {
     return deleteDoc(this._StationDocRef(line_id, timetable_id, station_id));

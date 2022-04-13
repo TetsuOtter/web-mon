@@ -139,28 +139,27 @@ export const TimetableDocConverter: FirestoreDataConverter<TTimetableDocument> =
   }
 }
 
-export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
-  toFirestore: (_d) => {
-    const d = _d as TStationDocument;
-    const ret: Partial<TServerSideStationDocument> = {
-      full_name: d?.full_name,
-      name_len_4: d?.name_len_4,
-      location: d?.location,
-      required_time_to_this_sta: d?.required_time_to_this_sta,
-      arrive_time: fromDate(d?.arrive_time),
-      departure_time: fromDate(d?.departure_time),
-      is_pass: d?.is_pass,
-      arr_symbol: d?.arr_symbol,
-      dep_symbol: d?.dep_symbol,
-      track_num: d?.track_num,
-      run_in_limit: d?.run_in_limit,
-      run_out_limit: d?.run_out_limit,
-      sta_work: d?.sta_work,
-      sta_color: d?.sta_color,
-    };
+export const StationDocToFirestore = (d: Partial<TStationDocument>): Partial<TServerSideStationDocument> => {
+  return ({
+    full_name: d?.full_name,
+    name_len_4: d?.name_len_4,
+    location: d?.location,
+    required_time_to_this_sta: d?.required_time_to_this_sta,
+    arrive_time: fromDate(d?.arrive_time),
+    departure_time: fromDate(d?.departure_time),
+    is_pass: d?.is_pass,
+    arr_symbol: d?.arr_symbol,
+    dep_symbol: d?.dep_symbol,
+    track_num: d?.track_num,
+    run_in_limit: d?.run_in_limit,
+    run_out_limit: d?.run_out_limit,
+    sta_work: d?.sta_work,
+    sta_color: d?.sta_color,
+  })
+};
 
-    return ret;
-  },
+export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
+  toFirestore: (_d) => StationDocToFirestore(_d as TStationDocument),
 
   fromFirestore: (ss, opt) => {
     const d = ss.data(opt) as TServerSideStationDocument;
