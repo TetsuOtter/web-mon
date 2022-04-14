@@ -22,6 +22,8 @@ export interface SharedState {
   timetableDataList: TTimetableDataListStruct[],
 
   lineDataList: TLineDataListStruct[],
+
+  isMenuOpen: boolean,
 }
 
 export const intiialSharedState: SharedState = {
@@ -43,6 +45,8 @@ export const intiialSharedState: SharedState = {
   timetableDataList: [],
 
   lineDataList: [],
+
+  isMenuOpen: false,
 };
 
 export interface DocId {

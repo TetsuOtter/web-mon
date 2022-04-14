@@ -1,29 +1,30 @@
 import { AccountCircle, Fullscreen, FullscreenExit, Home, Place, Preview, Train, Work } from "@mui/icons-material";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
 import { User } from "firebase/auth";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { WEST_MON_PAGE_ID, LINE_PAGE_URL, TIMETABLE_SELECT_PAGE_URL, SHOW_TIMETABLE_PAGE_URL } from "../index";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { State } from "../redux/reducer";
+import { setIsMenuOpen } from "../redux/setters";
 
 interface Props {
-  isMenuOpen: boolean,
-  setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
   userData?: User | null,
 }
 
 const reduxSelector = (state: State) => {
   return {
     user: state.setSharedDataReducer.currentUser,
+    isMenuOpen: state.setSharedDataReducer.isMenuOpen,
   };
 };
 
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { user } = useSelector(reduxSelector);
+  const { user, isMenuOpen } = useSelector(reduxSelector);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const changeWindowState = () => {
     const _isFullscreen = !!document.fullscreenElement;
@@ -43,9 +44,9 @@ export const Menu = (props: Props) => {
   return (
     <SwipeableDrawer
       anchor="left"
-      open={props.isMenuOpen}
-      onOpen={() => props.setIsMenuOpen(true)}
-      onClose={() => props.setIsMenuOpen(false)}
+      open={isMenuOpen}
+      onOpen={() => dispatch(setIsMenuOpen(true))}
+      onClose={() => dispatch(setIsMenuOpen(false))}
     >
       <Box
         sx={{ minWidth: 270 }}

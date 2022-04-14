@@ -36,6 +36,11 @@ export const setCurrentUserAction = (user: User | null): ActionWithPayload<User 
   payload: user
 });
 
+export const setIsMenuOpen = (isOpen: boolean | undefined): ActionWithPayload<boolean | undefined> => ({
+  type: TYPES.SET_IS_MENU_OPEN,
+  payload: isOpen
+});
+
 export const setLineDataList = (arr: TLineDataListStruct[]): ActionWithPayload<TLineDataListStruct[]> => ({
   type: TYPES.SET_LINE_LIST,
   payload: arr,

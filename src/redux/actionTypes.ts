@@ -4,6 +4,8 @@ export const SET_STATIONS = "SET_STATIONS";
 export const SET_CURRENT_STATION = "SET_CURENT_STATION";
 export const SET_USER = "SET_USER";
 
+export const SET_IS_MENU_OPEN = "SET_IS_MENU_OPEN";
+
 // Lines page actions
 export const SET_LINE_LIST = "SET_LINE_LIST";
 

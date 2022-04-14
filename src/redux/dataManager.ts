@@ -94,6 +94,15 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
           timetableDataList: payload
         };
       }
+
+    case TYPES.SET_IS_MENU_OPEN:
+      {
+        const payload = action.payload as (boolean | undefined);
+        return {
+          ...state,
+          isMenuOpen: payload ?? !state.isMenuOpen
+        };
+      }
   }
   return state;
 };

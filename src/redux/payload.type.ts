@@ -21,4 +21,6 @@ export type SharedStatePayloadTypes = (
   | null
   | TLineDataListStruct[]
   | TTimetableDataListStruct[]
+  | boolean
+  | undefined
 );

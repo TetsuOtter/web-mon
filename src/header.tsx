@@ -6,7 +6,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentStationId, setCurrentUserAction, setLine, setStations, setTrain } from "./redux/setters";
+import { setCurrentStationId, setCurrentUserAction, setIsMenuOpen, setLine, setStations, setTrain } from "./redux/setters";
 import { getIDParams } from "./index";
 import { useLocation } from "react-router-dom";
 import { State } from "./redux/reducer";
@@ -30,7 +30,6 @@ const reduxSelector = (state: State) => {
 
 export const Header: FC = () => {
   const [isAuthVisible, setIsAuthVisible] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const params = getIDParams(useLocation());
   const { line_id, timetable_id, station_id, stations, db, user } = useSelector(reduxSelector);
@@ -117,12 +116,9 @@ export const Header: FC = () => {
       color="inherit"
       style={APPBAR_STYLE}
     >
-      <Menu
-        isMenuOpen={isMenuOpen}
-        setIsMenuOpen={setIsMenuOpen}
-      />
+      <Menu />
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => dispatch(setIsMenuOpen(undefined))}>
           <MenuIcon />
         </IconButton>
 
