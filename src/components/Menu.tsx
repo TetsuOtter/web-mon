@@ -15,13 +15,17 @@ interface Props {
 const reduxSelector = (state: State) => {
   return {
     user: state.setSharedDataReducer.currentUser,
+    line_data: state.setSharedDataReducer.lineData,
+    timetable_data: state.setSharedDataReducer.trainData,
+    stations: state.setSharedDataReducer.stations,
+    station_id: state.setSharedDataReducer.currentStationId,
     isMenuOpen: state.setSharedDataReducer.isMenuOpen,
   };
 };
 
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { user, isMenuOpen } = useSelector(reduxSelector);
+  const { user, line_data, timetable_data, stations, station_id, isMenuOpen } = useSelector(reduxSelector);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -79,7 +83,7 @@ export const Menu = (props: Props) => {
               <ListItemIcon>
                 <Train />
               </ListItemIcon>
-              <ListItemText primary="路線" secondary={"LINE_NAME"} />
+              <ListItemText primary="路線" secondary={line_data?.disp_name ?? "未選択"} />
             </ListItemButton>
           </ListItem>
 
@@ -88,7 +92,7 @@ export const Menu = (props: Props) => {
               <ListItemIcon>
                 <Work />
               </ListItemIcon>
-              <ListItemText primary="列車" secondary={"TRAIN_NUMBER"} />
+              <ListItemText primary="列車" secondary={timetable_data?.train_type ?? "未選択"} />
             </ListItemButton>
           </ListItem>
 
@@ -97,7 +101,7 @@ export const Menu = (props: Props) => {
               <ListItemIcon>
                 <Place />
               </ListItemIcon>
-              <ListItemText primary="現在駅" secondary={"CURRENT_STATION"} />
+              <ListItemText primary="現在駅" secondary={stations.find(v => v.document_id === station_id) ?? "未選択"} />
             </ListItemButton>
           </ListItem>
 
