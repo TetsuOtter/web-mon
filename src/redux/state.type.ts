@@ -24,6 +24,7 @@ export interface SharedState {
   lineDataList: TLineDataListStruct[],
 
   isMenuOpen: boolean,
+  isToolbarVisible: boolean,
 }
 
 export const intiialSharedState: SharedState = {
@@ -47,6 +48,7 @@ export const intiialSharedState: SharedState = {
   lineDataList: [],
 
   isMenuOpen: false,
+  isToolbarVisible: true,
 };
 
 export interface DocId {

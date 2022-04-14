@@ -103,6 +103,15 @@ export const setSharedDataReducer: Reducer<SharedState, ActionWithPayload<Shared
           isMenuOpen: payload ?? !state.isMenuOpen
         };
       }
+
+    case TYPES.SET_IS_TOOLBAR_VISIBLE:
+      {
+        const payload = action.payload as (boolean | undefined);
+        return {
+          ...state,
+          isToolbarVisible: payload ?? !state.isToolbarVisible
+        };
+      }
   }
   return state;
 };

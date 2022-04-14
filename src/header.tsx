@@ -1,4 +1,4 @@
-import { AppBar, Dialog, Toolbar, Button, IconButton, Typography } from "@mui/material";
+import { AppBar, Dialog, Toolbar, Button, IconButton, Typography, Collapse } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { FC, useEffect, useState, CSSProperties } from "react";
 import Auth from "./components/Auth";
@@ -6,7 +6,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentStationId, setCurrentUserAction, setIsMenuOpen, setLine, setStations, setTrain } from "./redux/setters";
+import { setCurrentStationId, setCurrentUserAction, setIsMenuOpen, setIsToolbarVisible, setLine, setStations, setTrain } from "./redux/setters";
 import { getIDParams } from "./index";
 import { useLocation } from "react-router-dom";
 import { State } from "./redux/reducer";
@@ -25,6 +25,7 @@ const reduxSelector = (state: State) => {
     timetable_id: state.setSharedDataReducer.trainDataId,
     stations: state.setSharedDataReducer.stations,
     station_id: state.setSharedDataReducer.currentStationId,
+    is_toolbar_visible: state.setSharedDataReducer.isToolbarVisible,
   };
 };
 
@@ -32,7 +33,7 @@ export const Header: FC = () => {
   const [isAuthVisible, setIsAuthVisible] = useState(false);
   const dispatch = useDispatch();
   const params = getIDParams(useLocation());
-  const { line_id, timetable_id, station_id, stations, db, user } = useSelector(reduxSelector);
+  const { line_id, timetable_id, station_id, stations, db, user, is_toolbar_visible } = useSelector(reduxSelector);
 
   const authButtonClicked = () => {
     if (user)
@@ -46,6 +47,35 @@ export const Header: FC = () => {
       dispatch(setCurrentUserAction(_user));
     });
   }, [dispatch]);
+
+  useEffect(() => {
+    let touchHistoryArr: Date[] = [];
+
+    window.addEventListener("click", (v) => {
+      const TOUCH_ENABLE_AREA_PERCENTAGE = 10;
+      const NEEDED_TOUCH_COUNT = 5;
+      const NEEDED_TOUCHING_IN_MS = 3000;
+
+      const isXEffectual = v.x < (window.innerWidth * TOUCH_ENABLE_AREA_PERCENTAGE / 100);
+      const isYEffectual = v.y < (window.innerHeight * TOUCH_ENABLE_AREA_PERCENTAGE / 100);
+
+      if (!isXEffectual || !isYEffectual)
+        return;
+
+      touchHistoryArr.push(new Date());
+
+      if (touchHistoryArr.length < NEEDED_TOUCH_COUNT)
+        return;
+
+      touchHistoryArr = touchHistoryArr.slice(-NEEDED_TOUCH_COUNT);
+
+      const diff = touchHistoryArr[4].getTime() - touchHistoryArr[0].getTime();
+      if (diff <= NEEDED_TOUCHING_IN_MS) {
+        touchHistoryArr = [];
+        dispatch(setIsToolbarVisible(undefined));
+      }
+    });
+  }, []);
 
   const loadAndSetLineData = (id?: string) => {
     if (!id)
@@ -117,23 +147,25 @@ export const Header: FC = () => {
       style={APPBAR_STYLE}
     >
       <Menu />
-      <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => dispatch(setIsMenuOpen(undefined))}>
-          <MenuIcon />
-        </IconButton>
+      <Collapse in={is_toolbar_visible}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => dispatch(setIsMenuOpen(undefined))}>
+            <MenuIcon />
+          </IconButton>
 
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          WebMON
-        </Typography>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            WebMON
+          </Typography>
 
-        <div>
-          <Button
-            onClick={authButtonClicked}
-            color="inherit"
-            variant="outlined"
-          >{user ? "ログアウト" : "ログイン / 登録"}</Button>
-        </div>
-      </Toolbar>
+          <div>
+            <Button
+              onClick={authButtonClicked}
+              color="inherit"
+              variant="outlined"
+            >{user ? "ログアウト" : "ログイン / 登録"}</Button>
+          </div>
+        </Toolbar>
+      </Collapse>
       <Dialog
         open={isAuthVisible}
         onClose={() => setIsAuthVisible(false)}>

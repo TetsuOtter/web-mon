@@ -1,12 +1,12 @@
-import { AccountCircle, Fullscreen, FullscreenExit, Home, Place, Preview, Train, Work } from "@mui/icons-material";
-import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
+import { AccountCircle, Fullscreen, FullscreenExit, Home, Menu as MenuIcon, Place, Preview, Train, Visibility, VisibilityOff, Work } from "@mui/icons-material";
+import { Box, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar, Typography } from "@mui/material";
 import { User } from "firebase/auth";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { WEST_MON_PAGE_ID, LINE_PAGE_URL, TIMETABLE_SELECT_PAGE_URL, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "../redux/reducer";
-import { setIsMenuOpen } from "../redux/setters";
+import { setIsMenuOpen, setIsToolbarVisible } from "../redux/setters";
 
 interface Props {
   userData?: User | null,
@@ -20,12 +20,13 @@ const reduxSelector = (state: State) => {
     stations: state.setSharedDataReducer.stations,
     station_id: state.setSharedDataReducer.currentStationId,
     isMenuOpen: state.setSharedDataReducer.isMenuOpen,
+    isToolbarVisible: state.setSharedDataReducer.isToolbarVisible,
   };
 };
 
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { user, line_data, timetable_data, stations, station_id, isMenuOpen } = useSelector(reduxSelector);
+  const { user, line_data, timetable_data, stations, station_id, isMenuOpen, isToolbarVisible } = useSelector(reduxSelector);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -56,7 +57,19 @@ export const Menu = (props: Props) => {
         sx={{ minWidth: 270 }}
         role="presentation"
       >
-        <Toolbar />
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => dispatch(setIsMenuOpen(undefined))}>
+            <MenuIcon />
+          </IconButton>
+
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            WebMON
+          </Typography>
+        </Toolbar>
         <List>
           <ListItem>
             <ListItemButton onClick={() => navigate("/" + location.search)}>
@@ -113,6 +126,17 @@ export const Menu = (props: Props) => {
                 <Preview />
               </ListItemIcon>
               <ListItemText primary={"West MON"} />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider />
+
+          <ListItem>
+            <ListItemButton onClick={() => dispatch(setIsToolbarVisible(!isToolbarVisible))}>
+              <ListItemIcon>
+                {isToolbarVisible ? <VisibilityOff /> : <Visibility />}
+              </ListItemIcon>
+              <ListItemText primary={(isToolbarVisible ? "Hide" : "Show") + " Toolbar"} />
             </ListItemButton>
           </ListItem>
 

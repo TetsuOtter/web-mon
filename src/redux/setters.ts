@@ -41,6 +41,11 @@ export const setIsMenuOpen = (isOpen: boolean | undefined): ActionWithPayload<bo
   payload: isOpen
 });
 
+export const setIsToolbarVisible = (isVisible: boolean | undefined): ActionWithPayload<boolean | undefined> => ({
+  type: TYPES.SET_IS_TOOLBAR_VISIBLE,
+  payload: isVisible
+});
+
 export const setLineDataList = (arr: TLineDataListStruct[]): ActionWithPayload<TLineDataListStruct[]> => ({
   type: TYPES.SET_LINE_LIST,
   payload: arr,
