@@ -13,9 +13,15 @@ interface Props {
   userData?: User | null,
 }
 
+const reduxSelector = (state: State) => {
+  return {
+    user: state.setSharedDataReducer.currentUser,
+  };
+};
+
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const user = useSelector<State, User | null>(v => v.setSharedDataReducer.currentUser);
+  const { user } = useSelector(reduxSelector);
   const navigate = useNavigate();
   const location = useLocation();
 
