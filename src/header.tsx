@@ -6,7 +6,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentStationId, setCurrentUserAction, setIsMenuOpen, setIsToolbarVisible, setLine, setStations, setTrain } from "./redux/setters";
+import { setCurrentStationId, setCurrentUserAction, setErrors, setIsMenuOpen, setIsToolbarVisible, setLine, setStations, setTrain } from "./redux/setters";
 import { getIDParams } from "./index";
 import { useLocation } from "react-router-dom";
 import { State } from "./redux/reducer";
@@ -89,7 +89,7 @@ export const Header: FC = () => {
         return dispatch(setLine(v.id, gotData));
       else
         return Promise.reject("gotData was empty (@loadAndSetLineData)");
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   const loadAndSetTimetableData = (_line_id?: string, _timetable_id?: string) => {
@@ -110,7 +110,7 @@ export const Header: FC = () => {
       }
       else
         return Promise.reject("gotData was empty (@loadAndSetTimetableData)");
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   const setStationId = (_station_id?: string) => {
@@ -129,11 +129,11 @@ export const Header: FC = () => {
       loadAndSetLineData(param_line_id)
         .then(() => loadAndSetTimetableData(param_line_id, param_timetable_id))
         .then(() => setStationId(param_station_id))
-        .catch(console.warn);
+        .catch(err => dispatch(setErrors(err)));
     else if (timetable_id !== param_timetable_id)
       loadAndSetTimetableData(param_line_id, param_timetable_id)
         .then(() => setStationId(param_station_id))
-        .catch(console.warn);
+        .catch(err => dispatch(setErrors(err)));
     else if (station_id !== param_station_id)
       setStationId(param_station_id);
     // eslint-disable-next-line react-hooks/exhaustive-deps

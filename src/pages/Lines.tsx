@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateParams, TIMETABLE_SELECT_PAGE_URL } from '../index';
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLine, setLineDataList } from '../redux/setters';
+import { setErrors, setLine, setLineDataList } from '../redux/setters';
 import { Refresh } from "@mui/icons-material"
 import { IconButton } from '@mui/material';
 import { TLineDataListStruct, ToWithId } from '../redux/state.type';
@@ -97,7 +97,7 @@ export const Lines = () => {
   const loadLineDataList = (loadFromOnline = false) => {
     return db?.getLineDocs(uid, !!loadFromOnline).then(result =>
       dispatch(setLineDataList(result.docs.map(v => ToWithId(v.id, v.data()))))
-    );
+    ).catch(err => dispatch(setErrors(err)));
   };
   const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadLineDataList(true);
 
@@ -116,7 +116,7 @@ export const Lines = () => {
           dispatch(setLineDataList([...lineData, ToWithId(v.id, result)]));
         }
         return;
-      });
+      }).catch(err => dispatch(setErrors(err)));
   };
 
   /* TODO: 路線の削除はサーバーサイドで実行するため、その処理を実装し次第こちらにも実装する
@@ -136,7 +136,7 @@ export const Lines = () => {
       const index = after.findIndex(v => v.document_id === data.document_id);
       after[index] = data;
       dispatch(setLineDataList(after));
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   return (<MaterialTable

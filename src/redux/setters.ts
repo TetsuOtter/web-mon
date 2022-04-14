@@ -55,3 +55,8 @@ export const setTimetableDataList = (arr: TTimetableDataListStruct[]): ActionWit
   type: TYPES.SET_TIMETABLE_LIST,
   payload: arr,
 });
+
+export const setErrors = (errors: any[]): ActionWithPayload<any[]> => ({
+  type: TYPES.SET_ERRORS,
+  payload: errors,
+});

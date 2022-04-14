@@ -72,3 +72,11 @@ export function FromWithId<T>(withId: (DocId & T)): Omit<DocId & T, "document_id
   const { document_id, ...ret } = withId;
   return ret;
 }
+
+export interface ErrorVisualizerState {
+  errors: any[]
+};
+
+export const initialErrorVisualizerState: ErrorVisualizerState = {
+  errors: []
+};

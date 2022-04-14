@@ -12,3 +12,6 @@ export const SET_LINE_LIST = "SET_LINE_LIST";
 
 // Timetable page actions
 export const SET_TIMETABLE_LIST = "SET_TIMETABLE_LIST";
+
+// ErrorVisualizer actions
+export const SET_ERRORS = "SET_ERRORS";
