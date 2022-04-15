@@ -22,6 +22,9 @@ export interface SharedState {
   timetableDataList: TTimetableDataListStruct[],
 
   lineDataList: TLineDataListStruct[],
+
+  isMenuOpen: boolean,
+  isToolbarVisible: boolean,
 }
 
 export const intiialSharedState: SharedState = {
@@ -43,6 +46,9 @@ export const intiialSharedState: SharedState = {
   timetableDataList: [],
 
   lineDataList: [],
+
+  isMenuOpen: false,
+  isToolbarVisible: true,
 };
 
 export interface DocId {
@@ -66,3 +72,11 @@ export function FromWithId<T>(withId: (DocId & T)): Omit<DocId & T, "document_id
   const { document_id, ...ret } = withId;
   return ret;
 }
+
+export interface ErrorVisualizerState {
+  errors: any[]
+};
+
+export const initialErrorVisualizerState: ErrorVisualizerState = {
+  errors: []
+};

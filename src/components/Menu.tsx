@@ -1,23 +1,35 @@
-import { AccountCircle, Fullscreen, FullscreenExit, Home, Place, Preview, Train, Work } from "@mui/icons-material";
-import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar } from "@mui/material";
+import { AccountCircle, Fullscreen, FullscreenExit, Home, Menu as MenuIcon, Place, Preview, Train, Visibility, VisibilityOff, Work } from "@mui/icons-material";
+import { Box, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar, Typography } from "@mui/material";
 import { User } from "firebase/auth";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { WEST_MON_PAGE_ID, LINE_PAGE_URL, TIMETABLE_SELECT_PAGE_URL, SHOW_TIMETABLE_PAGE_URL } from "../index";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { State } from "../redux/reducer";
+import { setIsMenuOpen, setIsToolbarVisible } from "../redux/setters";
 
 interface Props {
-  isMenuOpen: boolean,
-  setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
   userData?: User | null,
 }
 
+const reduxSelector = (state: State) => {
+  return {
+    user: state.setSharedDataReducer.currentUser,
+    line_data: state.setSharedDataReducer.lineData,
+    timetable_data: state.setSharedDataReducer.trainData,
+    stations: state.setSharedDataReducer.stations,
+    station_id: state.setSharedDataReducer.currentStationId,
+    isMenuOpen: state.setSharedDataReducer.isMenuOpen,
+    isToolbarVisible: state.setSharedDataReducer.isToolbarVisible,
+  };
+};
+
 export const Menu = (props: Props) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const user = useSelector<State, User | null>(v => v.setSharedDataReducer.currentUser);
+  const { user, line_data, timetable_data, stations, station_id, isMenuOpen, isToolbarVisible } = useSelector(reduxSelector);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const changeWindowState = () => {
     const _isFullscreen = !!document.fullscreenElement;
@@ -37,15 +49,27 @@ export const Menu = (props: Props) => {
   return (
     <SwipeableDrawer
       anchor="left"
-      open={props.isMenuOpen}
-      onOpen={() => props.setIsMenuOpen(true)}
-      onClose={() => props.setIsMenuOpen(false)}
+      open={isMenuOpen}
+      onOpen={() => dispatch(setIsMenuOpen(true))}
+      onClose={() => dispatch(setIsMenuOpen(false))}
     >
       <Box
         sx={{ minWidth: 270 }}
         role="presentation"
       >
-        <Toolbar />
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => dispatch(setIsMenuOpen(undefined))}>
+            <MenuIcon />
+          </IconButton>
+
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            WebMON
+          </Typography>
+        </Toolbar>
         <List>
           <ListItem>
             <ListItemButton onClick={() => navigate("/" + location.search)}>
@@ -72,7 +96,7 @@ export const Menu = (props: Props) => {
               <ListItemIcon>
                 <Train />
               </ListItemIcon>
-              <ListItemText primary="路線" secondary={"LINE_NAME"} />
+              <ListItemText primary="路線" secondary={line_data?.disp_name ?? "未選択"} />
             </ListItemButton>
           </ListItem>
 
@@ -81,7 +105,7 @@ export const Menu = (props: Props) => {
               <ListItemIcon>
                 <Work />
               </ListItemIcon>
-              <ListItemText primary="列車" secondary={"TRAIN_NUMBER"} />
+              <ListItemText primary="列車" secondary={timetable_data?.train_type ?? "未選択"} />
             </ListItemButton>
           </ListItem>
 
@@ -90,7 +114,7 @@ export const Menu = (props: Props) => {
               <ListItemIcon>
                 <Place />
               </ListItemIcon>
-              <ListItemText primary="現在駅" secondary={"CURRENT_STATION"} />
+              <ListItemText primary="現在駅" secondary={stations.find(v => v.document_id === station_id) ?? "未選択"} />
             </ListItemButton>
           </ListItem>
 
@@ -102,6 +126,17 @@ export const Menu = (props: Props) => {
                 <Preview />
               </ListItemIcon>
               <ListItemText primary={"West MON"} />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider />
+
+          <ListItem>
+            <ListItemButton onClick={() => dispatch(setIsToolbarVisible(!isToolbarVisible))}>
+              <ListItemIcon>
+                {isToolbarVisible ? <VisibilityOff /> : <Visibility />}
+              </ListItemIcon>
+              <ListItemText primary={(isToolbarVisible ? "Hide" : "Show") + " Toolbar"} />
             </ListItemButton>
           </ListItem>
 

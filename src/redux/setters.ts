@@ -36,6 +36,16 @@ export const setCurrentUserAction = (user: User | null): ActionWithPayload<User 
   payload: user
 });
 
+export const setIsMenuOpen = (isOpen: boolean | undefined): ActionWithPayload<boolean | undefined> => ({
+  type: TYPES.SET_IS_MENU_OPEN,
+  payload: isOpen
+});
+
+export const setIsToolbarVisible = (isVisible: boolean | undefined): ActionWithPayload<boolean | undefined> => ({
+  type: TYPES.SET_IS_TOOLBAR_VISIBLE,
+  payload: isVisible
+});
+
 export const setLineDataList = (arr: TLineDataListStruct[]): ActionWithPayload<TLineDataListStruct[]> => ({
   type: TYPES.SET_LINE_LIST,
   payload: arr,
@@ -44,4 +54,9 @@ export const setLineDataList = (arr: TLineDataListStruct[]): ActionWithPayload<T
 export const setTimetableDataList = (arr: TTimetableDataListStruct[]): ActionWithPayload<TTimetableDataListStruct[]> => ({
   type: TYPES.SET_TIMETABLE_LIST,
   payload: arr,
+});
+
+export const setErrors = (errors: any[]): ActionWithPayload<any[]> => ({
+  type: TYPES.SET_ERRORS,
+  payload: errors,
 });

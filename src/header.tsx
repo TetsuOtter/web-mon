@@ -1,4 +1,4 @@
-import { AppBar, Dialog, Toolbar, Button, IconButton, Typography } from "@mui/material";
+import { AppBar, Dialog, Toolbar, Button, IconButton, Typography, Collapse } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { FC, useEffect, useState, CSSProperties } from "react";
 import Auth from "./components/Auth";
@@ -6,7 +6,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firestore/firebaseApp";
 import Menu from "./components/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentStationId, setCurrentUserAction, setLine, setStations, setTrain } from "./redux/setters";
+import { setCurrentStationId, setCurrentUserAction, setErrors, setIsMenuOpen, setIsToolbarVisible, setLine, setStations, setTrain } from "./redux/setters";
 import { getIDParams } from "./index";
 import { useLocation } from "react-router-dom";
 import { State } from "./redux/reducer";
@@ -25,15 +25,15 @@ const reduxSelector = (state: State) => {
     timetable_id: state.setSharedDataReducer.trainDataId,
     stations: state.setSharedDataReducer.stations,
     station_id: state.setSharedDataReducer.currentStationId,
+    is_toolbar_visible: state.setSharedDataReducer.isToolbarVisible,
   };
 };
 
 export const Header: FC = () => {
   const [isAuthVisible, setIsAuthVisible] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const params = getIDParams(useLocation());
-  const { line_id, timetable_id, station_id, stations, db, user } = useSelector(reduxSelector);
+  const { line_id, timetable_id, station_id, stations, db, user, is_toolbar_visible } = useSelector(reduxSelector);
 
   const authButtonClicked = () => {
     if (user)
@@ -48,6 +48,36 @@ export const Header: FC = () => {
     });
   }, [dispatch]);
 
+  useEffect(() => {
+    let touchHistoryArr: Date[] = [];
+
+    window.addEventListener("click", (v) => {
+      const TOUCH_ENABLE_AREA_PERCENTAGE = 10;
+      const NEEDED_TOUCH_COUNT = 5;
+      const NEEDED_TOUCHING_IN_MS = 3000;
+
+      const isXEffectual = v.x < (window.innerWidth * TOUCH_ENABLE_AREA_PERCENTAGE / 100);
+      const isYEffectual = v.y < (window.innerHeight * TOUCH_ENABLE_AREA_PERCENTAGE / 100);
+
+      if (!isXEffectual || !isYEffectual)
+        return;
+
+      touchHistoryArr.push(new Date());
+
+      if (touchHistoryArr.length < NEEDED_TOUCH_COUNT)
+        return;
+
+      touchHistoryArr = touchHistoryArr.slice(-NEEDED_TOUCH_COUNT);
+
+      const diff = touchHistoryArr[4].getTime() - touchHistoryArr[0].getTime();
+      if (diff <= NEEDED_TOUCHING_IN_MS) {
+        touchHistoryArr = [];
+        dispatch(setIsToolbarVisible(undefined));
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const loadAndSetLineData = (id?: string) => {
     if (!id)
       return Promise.reject();
@@ -60,7 +90,7 @@ export const Header: FC = () => {
         return dispatch(setLine(v.id, gotData));
       else
         return Promise.reject("gotData was empty (@loadAndSetLineData)");
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   const loadAndSetTimetableData = (_line_id?: string, _timetable_id?: string) => {
@@ -81,7 +111,7 @@ export const Header: FC = () => {
       }
       else
         return Promise.reject("gotData was empty (@loadAndSetTimetableData)");
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   const setStationId = (_station_id?: string) => {
@@ -100,11 +130,11 @@ export const Header: FC = () => {
       loadAndSetLineData(param_line_id)
         .then(() => loadAndSetTimetableData(param_line_id, param_timetable_id))
         .then(() => setStationId(param_station_id))
-        .catch(console.warn);
+        .catch(err => dispatch(setErrors(err)));
     else if (timetable_id !== param_timetable_id)
       loadAndSetTimetableData(param_line_id, param_timetable_id)
         .then(() => setStationId(param_station_id))
-        .catch(console.warn);
+        .catch(err => dispatch(setErrors(err)));
     else if (station_id !== param_station_id)
       setStationId(param_station_id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,27 +147,26 @@ export const Header: FC = () => {
       color="inherit"
       style={APPBAR_STYLE}
     >
-      <Menu
-        isMenuOpen={isMenuOpen}
-        setIsMenuOpen={setIsMenuOpen}
-      />
-      <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          <MenuIcon />
-        </IconButton>
+      <Menu />
+      <Collapse in={is_toolbar_visible}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => dispatch(setIsMenuOpen(undefined))}>
+            <MenuIcon />
+          </IconButton>
 
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          WebMON
-        </Typography>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            WebMON
+          </Typography>
 
-        <div>
-          <Button
-            onClick={authButtonClicked}
-            color="inherit"
-            variant="outlined"
-          >{user ? "ログアウト" : "ログイン / 登録"}</Button>
-        </div>
-      </Toolbar>
+          <div>
+            <Button
+              onClick={authButtonClicked}
+              color="inherit"
+              variant="outlined"
+            >{user ? "ログアウト" : "ログイン / 登録"}</Button>
+          </div>
+        </Toolbar>
+      </Collapse>
       <Dialog
         open={isAuthVisible}
         onClose={() => setIsAuthVisible(false)}>

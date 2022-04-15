@@ -5,7 +5,7 @@ import { generateParams, WEST_MON_PAGE_ID } from "../index";
 import { useDispatch, useSelector } from 'react-redux';
 import { State } from '../redux/reducer';
 import { FromWithId, ToWithId, TStationDataListStruct } from '../redux/state.type';
-import { setCurrentStationId, setStations } from '../redux/setters';
+import { setCurrentStationId, setErrors, setStations } from '../redux/setters';
 import { Refresh } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { DEFAULT_DATE, StationDocInitValue } from '../firestore/DBCtrler.types.initValues';
@@ -114,7 +114,7 @@ export const ShowTimetable = () => {
   const setStationsData = (arr: TStationDataListStruct[]) => dispatch(setStations(arr));
 
   useEffect(() => {
-    loadStationDataList();
+    loadStationDataList().catch(err => dispatch(setErrors(err)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [train_id]);
 
@@ -147,7 +147,7 @@ export const ShowTimetable = () => {
           orig[index] = { ...data, document_id: result.id };
           setStationsData(orig);
         }
-      });
+      }).catch(err => dispatch(setErrors(err)));
     }
   }
 
@@ -157,7 +157,7 @@ export const ShowTimetable = () => {
       return db.addStationDoc(line_id, train_id, FromWithId(data)).then(v => {
         data.document_id = v.id;
         return dispatch(setStations([...stations, data]));
-      });
+      }).catch(err => dispatch(setErrors(err)));
     }
     else
       return Promise.reject();
@@ -167,7 +167,7 @@ export const ShowTimetable = () => {
     if (line_id && train_id && db)
       return db.deleteStationDoc(line_id, train_id, data.document_id).then(() =>
         dispatch(setStations(stations.filter(v => v.document_id !== data.document_id)))
-      );
+      ).catch(err => dispatch(setErrors(err)));
     else
       return Promise.reject();
   };
@@ -176,7 +176,7 @@ export const ShowTimetable = () => {
     if (line_id && train_id && db)
       return db.updateStationDoc(line_id, train_id, data.document_id, FromWithId(data)).then(() =>
         dispatch(setStations(stations.map(v => v.document_id === data.document_id ? data : v)))
-      );
+      ).catch(err => dispatch(setErrors(err)));
     else
       return Promise.reject();
   };
@@ -185,7 +185,7 @@ export const ShowTimetable = () => {
     if (line_id && train_id && db)
       return db.get1to9StationDocs(line_id, train_id).then(result =>
         dispatch(setStations(result.docs.map(v => ToWithId(v.id, v.data()))))
-      );
+      ).catch(err => dispatch(setErrors(err)));
     else
       return Promise.reject();
   };

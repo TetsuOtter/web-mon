@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateParams, SHOW_TIMETABLE_PAGE_URL } from "../index";
 import { State } from '../redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTimetableDataList, setTrain } from "../redux/setters";
+import { setErrors, setTimetableDataList, setTrain } from "../redux/setters";
 import { FromWithId, ToWithId, TTimetableDataListStruct } from '../redux/state.type';
 import { IconButton } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
@@ -116,7 +116,7 @@ export const Timetables = () => {
           orig[index] = ToWithId(result.id, data);
           setTimetableData(orig);
         }
-      });
+      }).catch(err => dispatch(setErrors(err)));
     }
   };
 
@@ -134,7 +134,7 @@ export const Timetables = () => {
     return db.addTimetableDoc(line_id, FromWithId(data)).then(v => {
       data.document_id = v.id;
       setTimetableData([...timetableData, data]);
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   /* TODO: 列車の削除はサーバーサイドで行う処理であるため、そちらを実装し次第こちらにも実装する
@@ -154,13 +154,13 @@ export const Timetables = () => {
       const index = orig.findIndex(v => v.document_id === data.document_id);
       orig[index] = data;
       setTimetableData(orig);
-    });
+    }).catch(err => dispatch(setErrors(err)));
   };
 
   const loadTimetableDataList = (loadFromOnline = false) => {
     return db?.getAllTimetableDocs(line_id, !!loadFromOnline).then(result =>
       dispatch(setTimetableDataList(result.docs.map(v => ToWithId(v.id, v.data()))))
-    );
+    ).catch(err => dispatch(setErrors(err)));
   };
   const RELOAD_ALL: MouseEventHandler<HTMLButtonElement> = () => loadTimetableDataList(true);
 
