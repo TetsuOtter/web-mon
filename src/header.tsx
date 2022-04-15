@@ -75,6 +75,7 @@ export const Header: FC = () => {
         dispatch(setIsToolbarVisible(undefined));
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadAndSetLineData = (id?: string) => {
