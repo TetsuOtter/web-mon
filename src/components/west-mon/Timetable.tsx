@@ -1,15 +1,15 @@
 import { StationDataRow } from "./StationDataRow";
-import { TStationDocument } from "../../firestore/DBCtrler.types";
+import { TTimetableRowDocument } from "../../firestore/DBCtrler.types";
 
 export interface TimetableProps {
-  stations?: TStationDocument[],
+  stations?: TTimetableRowDocument[],
   currentLocation?: number,
   x?: number,
   y?: number,
 }
 
 export const Timetable = (props: TimetableProps) => {
-  const staD: TStationDocument = {
+  const staD: TTimetableRowDocument = {
     arr_symbol: "：",
     arrive_time: new Date(2000, 0, 1, 22, 59, 59),
     dep_symbol: "===",

@@ -1,4 +1,4 @@
-import { TTimetableDocument, TLineDocument, TStationDocument } from "./DBCtrler.types"
+import { TTimetableDocument, TLineDocument, TTimetableRowDocument } from "./DBCtrler.types"
 
 export const DEFAULT_DATE = new Date(2020, 0, 1, 0, 0, 0, 0);
 
@@ -39,7 +39,7 @@ export const TimetableDocInitValue: TTimetableDocument = {
   next_work: null,
 };
 
-export const StationDocInitValue: TStationDocument = {
+export const StationDocInitValue: TTimetableRowDocument = {
   full_name: "",
   name_len_4: "",
   location: 0.0,

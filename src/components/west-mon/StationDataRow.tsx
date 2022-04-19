@@ -1,10 +1,10 @@
-import { TStationDocument } from "../../firestore/DBCtrler.types";
+import { TTimetableRowDocument } from "../../firestore/DBCtrler.types";
 import moji from "moji";
 
 interface StationDataRowProps {
   y: number,
   color?: string,
-  stationData?: TStationDocument,
+  stationData?: TTimetableRowDocument,
   showRunTime?: boolean,
 }
 

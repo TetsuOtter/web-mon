@@ -3,7 +3,7 @@ import {
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
 import { DBCtrler } from "./DBCtrler";
-import { TLineDocument, TTimetableDocument, TStationDocument } from "./DBCtrler.types";
+import { TLineDocument, TTimetableDocument, TTimetableRowDocument } from "./DBCtrler.types";
 import { testRunner } from "./DBCtrler.test";
 
 test("Create/Get/Delete Station Test", testRunner(async (env) => {
@@ -47,7 +47,7 @@ test("Create/Get/Delete Station Test", testRunner(async (env) => {
     additional_info: "付帯情報があれば記載します",
     next_work: null
   };
-  const expect_station_data: TStationDocument = {
+  const expect_station_data: TTimetableRowDocument = {
     full_name: "省略のない駅名",
     name_len_4: "四字駅名",
     location: 1.23,
@@ -114,7 +114,7 @@ test("Create/Get Some Station Test", testRunner(async (env) => {
     additional_info: "付帯情報があれば記載します",
     next_work: null
   };
-  const expect_station_data: TStationDocument = {
+  const expect_station_data: TTimetableRowDocument = {
     full_name: "省略のない駅名",
     name_len_4: "四字駅名",
     location: 1.23,

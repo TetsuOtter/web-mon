@@ -1,6 +1,6 @@
 import { addDoc, arrayRemove, arrayUnion, collection, CollectionReference, deleteDoc, doc, DocumentReference, DocumentSnapshot, enableIndexedDbPersistence, Firestore, getDocFromCache, getDocFromServer, getDocsFromCache, getDocsFromServer, orderBy, Query, query, QueryConstraint, QuerySnapshot, updateDoc, where, WithFieldValue } from "firebase/firestore";
 import { FirebaseFirestore as CompatFirestore } from "@firebase/firestore-types";
-import { TLineDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
+import { TLineDocument, TTimetableRowDocument, TTimetableDocument } from "./DBCtrler.types";
 import { LineDocConverter, StationDocConverter, StationDocToFirestore, TimetableDocConverter, TimetableDocToFirestore } from "./DBCtrler.conv";
 
 const COLLECTION_NAME_LINE = "line";
@@ -59,10 +59,10 @@ export class DBCtrler {
     return collection(this.db, COLLECTION_NAME_LINE, line_id, COLLECTION_NAME_TIMETABLE).withConverter(TimetableDocConverter);
   }
 
-  public _StationDocRef(line_id: string, timetable_id: string, station_id: string): DocumentReference<TStationDocument> {
+  public _StationDocRef(line_id: string, timetable_id: string, station_id: string): DocumentReference<TTimetableRowDocument> {
     return doc(this.db, COLLECTION_NAME_LINE, line_id, COLLECTION_NAME_TIMETABLE, timetable_id, COLLECTION_NAME_STATION, station_id).withConverter(StationDocConverter);
   }
-  public _StationCollectionRef(line_id: string, timetable_id: string): CollectionReference<TStationDocument> {
+  public _StationCollectionRef(line_id: string, timetable_id: string): CollectionReference<TTimetableRowDocument> {
     return collection(this.db, COLLECTION_NAME_LINE, line_id, COLLECTION_NAME_TIMETABLE, timetable_id, COLLECTION_NAME_STATION).withConverter(StationDocConverter);
   }
   //#endregion
@@ -97,11 +97,11 @@ export class DBCtrler {
     return this.getTimetableDocs_Query(line_id, where("train_id", "array-contains", train_id));
   }
 
-  public getStationDoc(line_id: string, timetable_id: string, station_id: string): Promise<DocumentSnapshot<TStationDocument>> {
+  public getStationDoc(line_id: string, timetable_id: string, station_id: string): Promise<DocumentSnapshot<TTimetableRowDocument>> {
     return this.getDocFromCacheOrServer(this._StationDocRef(line_id, timetable_id, station_id));
   }
 
-  public get1to9StationDocs(line_id: string, timetable_id: string): Promise<QuerySnapshot<TStationDocument>> {
+  public get1to9StationDocs(line_id: string, timetable_id: string): Promise<QuerySnapshot<TTimetableRowDocument>> {
     return this.getDocsFromCacheOrServer(query(this._StationCollectionRef(line_id, timetable_id), orderBy("location")));
   }
   //#endregion
@@ -188,10 +188,10 @@ export class DBCtrler {
 
   // Timetable削除は未対応
 
-  public addStationDoc(line_id: string, timetable_id: string, data: TStationDocument): Promise<DocumentReference<TStationDocument>> {
+  public addStationDoc(line_id: string, timetable_id: string, data: TTimetableRowDocument): Promise<DocumentReference<TTimetableRowDocument>> {
     return addDoc(this._StationCollectionRef(line_id, timetable_id), data);
   }
-  public updateStationDoc(line_id: string, timetable_id: string, station_id: string, data: Partial<TStationDocument>): Promise<void> {
+  public updateStationDoc(line_id: string, timetable_id: string, station_id: string, data: Partial<TTimetableRowDocument>): Promise<void> {
     return updateDoc(this._StationDocRef(line_id, timetable_id, station_id), StationDocToFirestore(data));
   }
   public deleteStationDoc(line_id: string, timetable_id: string, station_id: string): Promise<void> {

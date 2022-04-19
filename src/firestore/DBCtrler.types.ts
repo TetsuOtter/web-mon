@@ -125,7 +125,7 @@ export type TTimetableDocument = _ITimetableDocument<Date>;
 /** 時刻表データのデータ構造 (サーバーサイド用) */
 export type TServerSideTimetableDocument = _ITimetableDocument<Timestamp>;
 
-interface _IStationDocument<TDate> {
+interface _ITimetableRowDocument<TDate> {
   /** 駅名(省略なし) */
   full_name: string,
 
@@ -178,6 +178,6 @@ interface _IStationDocument<TDate> {
 };
 
 /** 駅情報データのデータ構造 */
-export type TStationDocument = _IStationDocument<Date>;
+export type TTimetableRowDocument = _ITimetableRowDocument<Date>;
 /** 駅情報データのデータ構造 (サーバーサイド用) */
-export type TServerSideStationDocument = _IStationDocument<Timestamp>;
+export type TServerSideTimetableRowDocument = _ITimetableRowDocument<Timestamp>;

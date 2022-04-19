@@ -1,5 +1,5 @@
 import { FirestoreDataConverter, Timestamp } from "firebase/firestore";
-import { TFirestoreDictionary, TLineDocument, TServerSideLineDocument, TServerSideStationDocument, TServerSideTimetableDocument, TStationDocument, TTimetableDocument } from "./DBCtrler.types";
+import { TFirestoreDictionary, TLineDocument, TServerSideLineDocument, TServerSideTimetableRowDocument, TServerSideTimetableDocument, TTimetableRowDocument, TTimetableDocument } from "./DBCtrler.types";
 
 function toMap(dic: TFirestoreDictionary<Timestamp>): Map<string, Date> {
   return new Map<string, Date>(
@@ -141,7 +141,7 @@ export const TimetableDocConverter: FirestoreDataConverter<TTimetableDocument> =
   }
 }
 
-export const StationDocToFirestore = (d: Partial<TStationDocument>): Partial<TServerSideStationDocument> => {
+export const StationDocToFirestore = (d: Partial<TTimetableRowDocument>): Partial<TServerSideTimetableRowDocument> => {
   return ({
     full_name: d?.full_name,
     name_len_4: d?.name_len_4,
@@ -160,11 +160,11 @@ export const StationDocToFirestore = (d: Partial<TStationDocument>): Partial<TSe
   })
 };
 
-export const StationDocConverter: FirestoreDataConverter<TStationDocument> = {
-  toFirestore: (_d) => StationDocToFirestore(_d as TStationDocument),
+export const StationDocConverter: FirestoreDataConverter<TTimetableRowDocument> = {
+  toFirestore: (_d) => StationDocToFirestore(_d as TTimetableRowDocument),
 
   fromFirestore: (ss, opt) => {
-    const d = ss.data(opt) as TServerSideStationDocument;
+    const d = ss.data(opt) as TServerSideTimetableRowDocument;
 
     return {
       full_name: d.full_name,
