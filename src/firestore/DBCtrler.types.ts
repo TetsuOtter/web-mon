@@ -42,15 +42,6 @@ export type TLineDocument = _ILineDocument<Map<string, Date>>;
 /** 路線データのデータ構造 (サーバーサイド用) */
 export type TServerSideLineDocument = _ILineDocument<TFirestoreDictionary<Timestamp>>;
 
-/** 方向情報 */
-export type TDirection = "Inbound" | "Outbound";
-
-/** 上り方向/内回り */
-export const Direction_Inbound: TDirection = "Inbound";
-/** 下り方向/外回り */
-export const Direction_Outbound: TDirection = "Outbound";
-
-
 /** 時刻表データのデータ構造 */
 interface _ITimetableDocument<TDate> {
   /** 任意に設定できるタグの配列 (順不同) */
@@ -65,8 +56,6 @@ interface _ITimetableDocument<TDate> {
   /** 初期状態で通過設定を行うかどうか */
   sec_sys_sta_pass_setting: boolean,
 
-  /** 列車の進行方向 */
-  direction: TDirection,
 
   /** 始発駅での無線番号 */
   radio_ch: string,
