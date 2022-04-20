@@ -123,28 +123,20 @@ interface _ITimetableRowDocument<TDate> {
   /** 駅名 */
   station: DocumentReference<TStationDocument>,
 
-  /** 到着時刻 */
-  arrive_time: TDate,
+  /** 到着時刻 (0時からの経過秒数) */
+  arrive_time: number | null,
 
-  /** 発車/通過時刻 */
-  departure_time: TDate,
+  /** 発車/通過時刻 (0時からの経過秒数) */
+  departure_time: number | null,
 
   /** 通過駅かどうか */
   is_pass: boolean,
 
-  /**
-   * 到着時刻部分で使用する, 「HH」と「MM」の間に挟む文字
-   * 通過駅であれば「↓」(DownArrow)で, 通常は「:」(コロン)
-   * 非表示の場合はemptyにする
-   */
-  arr_symbol: string,
+  /** 通過禁止駅かどうか */
+  no_pass: boolean,
 
-  /**
-   * 発車時刻部分で使用する, 「HH」と「MM」の間に挟む文字
-   * 終着駅であれば「=」(イコール)で, 通常は「:」(コロン)
-   * 非表示の場合はemptyにする
-   */
-  dep_symbol: string,
+  /** 運転停車かどうか */
+  is_stop_to_work: boolean,
 
   /** 到着/発車番線 */
   track: DocumentReference<TTrackDocument>,
