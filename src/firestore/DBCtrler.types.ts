@@ -126,17 +126,13 @@ export type TTimetableDocument = _ITimetableDocument<Date>;
 export type TServerSideTimetableDocument = _ITimetableDocument<Timestamp>;
 
 interface _ITimetableRowDocument<TDate> {
-  /** 駅名(省略なし) */
-  full_name: string,
 
-  /** 4文字での駅名 */
-  name_len_4: string,
 
-  /** 駅位置 */
-  location: number,
 
   /** 前の採時駅からこの駅までの所要時間 (「0」で非表示) */
   required_time_to_this_sta: number,
+  /** 駅名 */
+  station: DocumentReference<TStationDocument>,
 
   /** 到着時刻 */
   arrive_time: TDate,
@@ -162,7 +158,7 @@ interface _ITimetableRowDocument<TDate> {
   dep_symbol: string,
 
   /** 到着/発車番線 */
-  track_num: string,
+  track: DocumentReference<TTrackDocument>,
 
   /** 進入制限速度 [km/h] */
   run_in_limit: number,
@@ -181,3 +177,32 @@ interface _ITimetableRowDocument<TDate> {
 export type TTimetableRowDocument = _ITimetableRowDocument<Date>;
 /** 駅情報データのデータ構造 (サーバーサイド用) */
 export type TServerSideTimetableRowDocument = _ITimetableRowDocument<Timestamp>;
+
+interface _TStationDocument {
+  /** 駅名(省略なし) */
+  full_name: string,
+
+  /** 4文字での駅名 */
+  name_len_4: string,
+
+  /** 駅位置 */
+  location: number,
+};
+
+/** 駅情報データのデータ構造 */
+export type TStationDocument = _TStationDocument;
+/** 駅情報データのデータ構造 (サーバーサイド用) */
+export type TServerSideStationDocument = _TStationDocument;
+
+interface _TTrackDocument {
+  /** 番線名 (省略なし) */
+  full_name: string,
+
+  /** 番線名 (表示名 空白でfull_nameを表示) */
+  disp_name: string,
+};
+
+/** 番線データのデータ構造 */
+export type TTrackDocument = _TTrackDocument;
+/** 番線データのデータ構造 (サーバーサイド用) */
+export type TServerSideTrackDocument = _TTrackDocument;
