@@ -67,7 +67,6 @@ line |--o{ timetable: "/line/{LINE_ID}/timetables"
 line |--o{ station: "/line/{LINE_ID}/stations"
 
 timetable |--o{ row: "/line/{LINE_ID}/timetables"
-timetable |--o| timetable: "timetable.next_work"
 
 station |--o{ track: "/line/{LINE_ID}/stations/{STATION_ID}/tracks"
 
