@@ -4,17 +4,17 @@
 erDiagram
 
 line {
-  string[] can_read
-  string[] can_write
+  string_array can_read
+  string_array can_write
   string disp_name
-  string[] tag_list
-  Map<string,Date> hashed_read_pw
-  Map<string,Date> hashed_write_pw
+  string_arrray tag_list
+  Map_string_Date_ hashed_read_pw
+  Map_string_Date_ hashed_write_pw
   number time_multipl
 }
 
 timetable {
-  string[] tags
+  string_array tags
   string train_id
   string sec_sys_train_id
   boolean sec_sys_sta_pass_setting
@@ -40,12 +40,12 @@ timetable {
 row {
   integer required_time_to_this_sta
   Reference station
-  integer|null arrive_time
-  integer|null departure_time
+  integer_OR_null arrive_time
+  integer_OR_null departure_time
   boolean is_pass
   boolean no_pass
   boolean is_stop_to_work
-  Reference|null track
+  Reference_OR_null track
   integer run_in_limit
   integer run_out_limit
   string sta_work
@@ -61,16 +61,16 @@ station {
 track {
   string full_name
   string disp_name
-};
+}
 
-line |--o{ timetable: "/line/{LINE_ID}/timetables"
-line |--o{ station: "/line/{LINE_ID}/stations"
+line ||--o{ timetable: "/line/{LINE_ID}/timetables"
+line ||--o{ station: "/line/{LINE_ID}/stations"
 
-timetable |--o{ row: "/line/{LINE_ID}/timetables"
+timetable ||--o{ row: "/line/{LINE_ID}/timetables"
 
-station |--o{ track: "/line/{LINE_ID}/stations/{STATION_ID}/tracks"
+station ||--o{ track: "/line/{LINE_ID}/stations/{STATION_ID}/tracks"
 
-row |--| station: "row.station"
-row |--o| track: "row.track"
+row ||--|| station: "row.station"
+row ||--o| track: "row.track"
 
 ```
