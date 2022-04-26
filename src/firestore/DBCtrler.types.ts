@@ -42,57 +42,8 @@ export type TLineDocument = _ILineDocument<Map<string, Date>>;
 /** 路線データのデータ構造 (サーバーサイド用) */
 export type TServerSideLineDocument = _ILineDocument<TFirestoreDictionary<Timestamp>>;
 
-/** 時刻表データのデータ構造 */
-interface _ITimetableDocument<TDate> {
-  /** 任意に設定できるタグの配列 (順不同) */
-  tags: string[],
-
-  /** 列車番号 */
-  train_id: string,
-
-  /** 保安装置に設定する列車番号 */
-  sec_sys_train_id: string,
-
-  /** 初期状態で通過設定を行うかどうか */
-  sec_sys_sta_pass_setting: boolean,
-
-
-  /** 始発駅での無線番号 */
-  radio_ch: string,
-
-  /** 始発駅での線の色 (東芝型モニタにおける「種別」と「行先」の間にあるスペースの色) [RRGGBB] */
-  line_color: string,
-
-  /** 始発駅での列車種別 */
-  train_type: string,
-
-  /** 乗務開始駅の駅名 */
-  dep_from_name: string,
-
-  /** 乗務開始駅の発車時刻 */
-  dep_from_time: TDate,
-
-  /** 乗務開始駅での番線 */
-  dep_from_track_num: string,
-
-  /** 乗務終了液の駅名 */
-  work_to_name: string,
-
-  /** 乗務終了駅の到着時刻 */
-  work_to_time: TDate,
-
-  /** 乗務終了駅の到着番線 */
-  work_to_track_num: string,
-
-  /** 列車の終着駅の駅名 */
-  last_stop_name: string,
-
-  /** 列車の終着駅の到着時刻 */
-  last_stop_time: TDate,
-
-  /** 列車の終着駅の到着番線 */
-  last_stop_track_num: string,
-
+/** ABC共通 行路情報 */
+interface _IWorkCourceDocument<TDate> {
   /** 所属する乗務員区所 */
   office_name: string,
 
@@ -101,25 +52,96 @@ interface _ITimetableDocument<TDate> {
 
   /** ダイヤ発効日 */
   effected_date: TDate,
+};
+
+/** 開始と終了が指定された任意の情報を格納するオブジェクト */
+interface ITextWithFromUntilInfo {
+  /** テキスト */
+  text: string,
+
+  /** 開始地点情報 */
+  from_info: string,
+
+  /** 終了地点情報 */
+  to_info: string,
+}
+
+/** 行路中の特殊なアクションについて */
+interface IActionInWork {
+  /** アクションの種類 */
+  type: string,
+
+  /** アクションの開始地点 (Locationに対応する) */
+  from: number,
+
+  /** アクションの終了地点 (Locationに対応する) */
+  to: number,
+
+  /** アクションに必要な情報 */
+  data: string,
+}
+
+/** BC運用 各列車の情報 */
+interface _IBCWorkEachTrainDocument<TDate> {
+  /** 乗務する列車 */
+  train: DocumentReference<_IAWorkEachTrainDocument<TDate>>,
+
+  /** 乗務開始駅発車時刻について、初日00:00からの経過時間[分] */
+  work_from_time: number,
+
+  /** 乗務開始駅 */
+  work_from: DocumentReference<_ITimetableRowDocument>,
+
+  /** 乗務終了駅 */
+  work_to: DocumentReference<_ITimetableRowDocument>,
+
+  /** 便乗かどうか */
+  to_move: boolean,
+
+  /** 始発駅での線の色 (東芝型モニタにおける「種別」と「行先」の間にあるスペースの色) [RRGGBB] */
+  line_color: string,
+
+  /** 始発駅での列車種別 */
+  train_type: string,
+
+  /** 最高速度 */
+  max_speed: ITextWithFromUntilInfo[],
+
+  /** 速度種別 */
+  speed_type: ITextWithFromUntilInfo[],
+
+  /** けん引定数 */
+  hauling_capacity_of_engine: string,
 
   /** 付帯情報 */
   additional_info: string,
-
-  /** 次の乗務 */
-  next_work: DocumentReference<_ITimetableDocument<TDate>> | null
 };
 
-/** 時刻表データのデータ構造 */
-export type TTimetableDocument = _ITimetableDocument<Date>;
-/** 時刻表データのデータ構造 (サーバーサイド用) */
-export type TServerSideTimetableDocument = _ITimetableDocument<Timestamp>;
+/** A運用 各列車の情報 */
+interface _IAWorkEachTrainDocument<TDate> {
+  /** 列車番号 */
+  train_id: string,
 
-interface _ITimetableRowDocument<TDate> {
+  /** 保安装置に設定する列車番号 */
+  sec_sys_train_id: string,
 
+  /** E電かどうか */
+  is_e_train: boolean,
 
+  /** 始発駅発車時刻について、初日00:00からの経過時間[分] */
+  work_from_time: number,
 
-  /** 前の採時駅からこの駅までの所要時間 (「0」で非表示) */
-  required_time_to_this_sta: number,
+  /** 編成両数 */
+  car_count: number,
+
+  /** 始発駅 */
+  work_from: DocumentReference<_ITimetableRowDocument>,
+
+  /** 終着駅 */
+  work_to: DocumentReference<_ITimetableRowDocument>,
+};
+
+interface _ITimetableRowDocument {
   /** 駅名 */
   station: DocumentReference<TStationDocument>,
 
@@ -151,13 +173,16 @@ interface _ITimetableRowDocument<TDate> {
   sta_work: string,
 
   /** 駅の色 */
-  sta_color: string
+  sta_color: string,
+
+  /** 記事 */
+  note: string,
 };
 
 /** 駅情報データのデータ構造 */
-export type TTimetableRowDocument = _ITimetableRowDocument<Date>;
+export type TTimetableRowDocument = _ITimetableRowDocument;
 /** 駅情報データのデータ構造 (サーバーサイド用) */
-export type TServerSideTimetableRowDocument = _ITimetableRowDocument<Timestamp>;
+export type TServerSideTimetableRowDocument = _ITimetableRowDocument;
 
 interface _TStationDocument {
   /** 駅名(省略なし) */
