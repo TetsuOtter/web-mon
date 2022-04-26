@@ -1,6 +1,6 @@
 # データベース構造
 
-```:mermaid
+```mermaid
 erDiagram
 
 line {
