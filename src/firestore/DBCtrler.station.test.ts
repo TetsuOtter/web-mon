@@ -67,21 +67,21 @@ test("Create/Get/Delete Station Test", testRunner(async (env) => {
 
   const line_data = await assertSucceeds(db_owner.createNewLineData(owner_id, expect_line_data.disp_name));
   const timetable_data = await assertSucceeds(db_owner.addTimetableDoc(line_data.id, expect_timetable_data));
-  const station_data = await assertSucceeds(db_owner.addStationDoc(line_data.id, timetable_data.id, expect_station_data));
+  const station_data = await assertSucceeds(db_owner.addTimetableRowDoc(line_data.id, timetable_data.id, expect_station_data));
 
-  await assertFails(db_anonymous.getStationDoc(line_data.id, timetable_data.id, station_data.id));
-  const get_station_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
+  await assertFails(db_anonymous.getTimetableRowDoc(line_data.id, timetable_data.id, station_data.id));
+  const get_station_result = await assertSucceeds(db_owner.getTimetableRowDoc(line_data.id, timetable_data.id, station_data.id));
 
   expect(get_station_result.data()).toStrictEqual(expect_station_data);
 
-  await assertFails(db_anonymous.deleteStationDoc(line_data.id, timetable_data.id, station_data.id));
+  await assertFails(db_anonymous.deleteTimetableRowDoc(line_data.id, timetable_data.id, station_data.id));
 
-  const before_delete_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
+  const before_delete_result = await assertSucceeds(db_owner.getTimetableRowDoc(line_data.id, timetable_data.id, station_data.id));
   expect(before_delete_result.exists()).toEqual(true);
 
-  await assertSucceeds(db_owner.deleteStationDoc(line_data.id, timetable_data.id, station_data.id));
+  await assertSucceeds(db_owner.deleteTimetableRowDoc(line_data.id, timetable_data.id, station_data.id));
 
-  const after_delete_result = await assertSucceeds(db_owner.getStationDoc(line_data.id, timetable_data.id, station_data.id));
+  const after_delete_result = await assertSucceeds(db_owner.getTimetableRowDoc(line_data.id, timetable_data.id, station_data.id));
   expect(after_delete_result.exists()).not.toEqual(true);
 }));
 
@@ -134,11 +134,11 @@ test("Create/Get Some Station Test", testRunner(async (env) => {
 
   const line_data = await assertSucceeds(db_owner.createNewLineData(owner_id, "サンプル線"));
   const timetable_data = await assertSucceeds(db_owner.addTimetableDoc(line_data.id, expect_timetable_data));
-  const station_data_1 = await assertSucceeds(db_owner.addStationDoc(line_data.id, timetable_data.id, expect_station_data));
-  const station_data_2 = await assertSucceeds(db_owner.addStationDoc(line_data.id, timetable_data.id, { ...expect_station_data, location: 0.1 }));
-  const station_data_3 = await assertSucceeds(db_owner.addStationDoc(line_data.id, timetable_data.id, { ...expect_station_data, location: 0.5 }));
+  const station_data_1 = await assertSucceeds(db_owner.addTimetableRowDoc(line_data.id, timetable_data.id, expect_station_data));
+  const station_data_2 = await assertSucceeds(db_owner.addTimetableRowDoc(line_data.id, timetable_data.id, { ...expect_station_data, location: 0.1 }));
+  const station_data_3 = await assertSucceeds(db_owner.addTimetableRowDoc(line_data.id, timetable_data.id, { ...expect_station_data, location: 0.5 }));
 
-  const getResult = await assertSucceeds(db_owner.get1to9StationDocs(line_data.id, timetable_data.id));
+  const getResult = await assertSucceeds(db_owner.get1to9TimetableRowDocs(line_data.id, timetable_data.id));
 
   expect(getResult.size).toBe(3);
   expect(getResult.docs[0].id).toBe(station_data_2.id);

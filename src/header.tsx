@@ -104,7 +104,7 @@ export const Header: FC = () => {
       if (gotData) {
         const toReturn = dispatch(setTrain(v.id, gotData));
 
-        return db.get1to9StationDocs(_line_id, _timetable_id).then(v => {
+        return db.get1to9TimetableRowDocs(_line_id, _timetable_id).then(v => {
           dispatch(setStations(v.docs.map(d => ToWithId(d.id, d.data()))));
           return toReturn;
         });

@@ -139,7 +139,7 @@ export const ShowTimetable = () => {
       if (!line_id || !train_id)
         return;
 
-      db?.getStationDoc(line_id, train_id, d.document_id).then(result => {
+      db?.getTimetableRowDoc(line_id, train_id, d.document_id).then(result => {
         const index = stations.findIndex(v => v.document_id === d.document_id);
         const orig = Array.from(stations);
         const data = result.data();
@@ -154,7 +154,7 @@ export const ShowTimetable = () => {
   const onRowAdd = (data: TStationDataListStruct): Promise<unknown> => {
     if (line_id && train_id && db) {
       data = { ...StationDocInitValue, ...data };
-      return db.addStationDoc(line_id, train_id, FromWithId(data)).then(v => {
+      return db.addTimetableRowDoc(line_id, train_id, FromWithId(data)).then(v => {
         data.document_id = v.id;
         return dispatch(setStations([...stations, data]));
       }).catch(err => dispatch(setErrors(err)));
@@ -165,7 +165,7 @@ export const ShowTimetable = () => {
 
   const onRowDelete = (data: TStationDataListStruct): Promise<unknown> => {
     if (line_id && train_id && db)
-      return db.deleteStationDoc(line_id, train_id, data.document_id).then(() =>
+      return db.deleteTimetableRowDoc(line_id, train_id, data.document_id).then(() =>
         dispatch(setStations(stations.filter(v => v.document_id !== data.document_id)))
       ).catch(err => dispatch(setErrors(err)));
     else
@@ -174,7 +174,7 @@ export const ShowTimetable = () => {
 
   const onRowUpdate = (data: TStationDataListStruct): Promise<unknown> => {
     if (line_id && train_id && db)
-      return db.updateStationDoc(line_id, train_id, data.document_id, FromWithId(data)).then(() =>
+      return db.updateTimetableRowDoc(line_id, train_id, data.document_id, FromWithId(data)).then(() =>
         dispatch(setStations(stations.map(v => v.document_id === data.document_id ? data : v)))
       ).catch(err => dispatch(setErrors(err)));
     else
@@ -183,7 +183,7 @@ export const ShowTimetable = () => {
 
   const loadStationDataList = (loadfromServerAnyway?: boolean) => {
     if (line_id && train_id && db)
-      return db.get1to9StationDocs(line_id, train_id).then(result =>
+      return db.get1to9TimetableRowDocs(line_id, train_id).then(result =>
         dispatch(setStations(result.docs.map(v => ToWithId(v.id, v.data()))))
       ).catch(err => dispatch(setErrors(err)));
     else
